@@ -1,13 +1,17 @@
 export function parseYaml(yamlString: string): any {
   if (!yamlString || typeof yamlString !== 'string') {
-    return Object.create(null);
+    return {};
   }
 
-  const lines = yamlString.split('\n');
-  const result: any = Object.create(null);
+  const cleanYaml = yamlString.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const lines = cleanYaml.split('\n');
+  const result: any = {};
+  
   let currentTopLevelKey: string | null = null;
   let currentArrayKey: string | null = null;
   let lastPushedObj: any = null;
+  let lastKeyIndent = -1;
+  let lastArrayIndent = -1;
 
   let inBlockScalar = false;
   let blockScalarIndent = 0;
@@ -20,19 +24,35 @@ export function parseYaml(yamlString: string): any {
     const indent = line.search(/\S|$/);
     const trimmed = line.trim();
 
-    if (inBlockScalar) {
-      if (trimmed === '' || indent >= blockScalarIndent) {
-        const cleanLine = trimmed === '' ? '' : line.slice(blockScalarIndent);
-        if (lastPushedObj && blockScalarKey && blockScalarKey in lastPushedObj) {
+    if (inBlockScalar && blockScalarKey) {
+      if (trimmed === '') {
+        const cleanLine = '';
+        if (lastPushedObj && typeof lastPushedObj === 'object' && blockScalarKey in lastPushedObj) {
           lastPushedObj[blockScalarKey] += (lastPushedObj[blockScalarKey] ? '\n' : '') + cleanLine;
-        } else if (currentTopLevelKey && result[currentTopLevelKey]) {
-          if (blockScalarKey && blockScalarKey in result[currentTopLevelKey]) {
-            result[currentTopLevelKey][blockScalarKey] += (result[currentTopLevelKey][blockScalarKey] ? '\n' : '') + cleanLine;
-          }
-        } else {
-          if (blockScalarKey && blockScalarKey in result) {
-            result[blockScalarKey] += (result[blockScalarKey] ? '\n' : '') + cleanLine;
-          }
+        } else if (currentTopLevelKey === blockScalarKey) {
+          result[currentTopLevelKey] = (result[currentTopLevelKey] || '') + (result[currentTopLevelKey] ? '\n' : '') + cleanLine;
+        } else if (currentTopLevelKey && typeof result[currentTopLevelKey] === 'object' && result[currentTopLevelKey] !== null && blockScalarKey in result[currentTopLevelKey]) {
+          result[currentTopLevelKey][blockScalarKey] = (result[currentTopLevelKey][blockScalarKey] || '') + (result[currentTopLevelKey][blockScalarKey] ? '\n' : '') + cleanLine;
+        } else if (blockScalarKey in result) {
+          result[blockScalarKey] = (result[blockScalarKey] || '') + (result[blockScalarKey] ? '\n' : '') + cleanLine;
+        }
+        continue;
+      }
+
+      if (blockScalarIndent === 0) {
+        blockScalarIndent = indent;
+      }
+
+      if (indent >= blockScalarIndent) {
+        const cleanLine = line.slice(blockScalarIndent);
+        if (lastPushedObj && typeof lastPushedObj === 'object' && blockScalarKey in lastPushedObj) {
+          lastPushedObj[blockScalarKey] += (lastPushedObj[blockScalarKey] ? '\n' : '') + cleanLine;
+        } else if (currentTopLevelKey === blockScalarKey) {
+          result[currentTopLevelKey] = (result[currentTopLevelKey] || '') + (result[currentTopLevelKey] ? '\n' : '') + cleanLine;
+        } else if (currentTopLevelKey && typeof result[currentTopLevelKey] === 'object' && result[currentTopLevelKey] !== null && blockScalarKey in result[currentTopLevelKey]) {
+          result[currentTopLevelKey][blockScalarKey] = (result[currentTopLevelKey][blockScalarKey] || '') + (result[currentTopLevelKey][blockScalarKey] ? '\n' : '') + cleanLine;
+        } else if (blockScalarKey in result) {
+          result[blockScalarKey] = (result[blockScalarKey] || '') + (result[blockScalarKey] ? '\n' : '') + cleanLine;
         }
         continue;
       } else {
@@ -44,36 +64,54 @@ export function parseYaml(yamlString: string): any {
       continue;
     }
 
+    // Array item detection - handle both "- item" and "- key: val"
     const arrayMatch = line.match(/^(\s*)-\s+(.*)$/);
     if (arrayMatch) {
+      const arrayIndent = arrayMatch[1].length;
       const itemVal = arrayMatch[2].trim();
+      
       if (currentTopLevelKey) {
-        if (!Array.isArray(result[currentTopLevelKey])) {
-          result[currentTopLevelKey] = [];
+        // If this hyphen is at a lower indent than the current array key, reset it
+        if (lastArrayIndent !== -1 && arrayIndent < lastKeyIndent) {
+            currentArrayKey = null;
+            lastPushedObj = null;
+        }
+
+        // Find target array
+        let targetArray: any[] | null = null;
+        if (currentArrayKey && lastPushedObj && Array.isArray(lastPushedObj[currentArrayKey])) {
+            targetArray = lastPushedObj[currentArrayKey];
+        } else if (currentArrayKey && typeof result[currentTopLevelKey] === 'object' && result[currentTopLevelKey] !== null && Array.isArray(result[currentTopLevelKey][currentArrayKey])) {
+            targetArray = result[currentTopLevelKey][currentArrayKey];
+        } else {
+            if (!Array.isArray(result[currentTopLevelKey])) {
+                result[currentTopLevelKey] = [];
+            }
+            targetArray = result[currentTopLevelKey];
         }
         
-        const objMatch = itemVal.match(/^([^:]+):\s*(.*)$/);
-        if (objMatch) {
-          lastPushedObj = Object.create(null);
-          const key = objMatch[1].trim();
-          const val = objMatch[2].trim() || '';
-          if (val === '|') {
-            lastPushedObj[key] = '';
-            inBlockScalar = true;
-            blockScalarIndent = indent + 2;
-            blockScalarKey = key;
-          } else {
-            lastPushedObj[key] = parseValue(val);
-          }
-          result[currentTopLevelKey].push(lastPushedObj);
-        } else {
-          if (lastPushedObj && currentArrayKey && Array.isArray(lastPushedObj[currentArrayKey])) {
-            lastPushedObj[currentArrayKey].push(parseValue(itemVal));
-          } else if (currentTopLevelKey && currentArrayKey && Array.isArray(result[currentTopLevelKey][currentArrayKey])) {
-            result[currentTopLevelKey][currentArrayKey].push(parseValue(itemVal));
-          } else {
-            result[currentTopLevelKey].push(parseValue(itemVal));
-          }
+        if (targetArray) {
+            const objMatch = itemVal.match(/^([^:]+):\s*(.*)$/);
+            if (objMatch) {
+              lastPushedObj = {};
+              currentArrayKey = null; // New object starts, reset sub-array key
+              const key = objMatch[1].trim();
+              const val = objMatch[2].trim() || '';
+              if (val === '|') {
+                lastPushedObj[key] = '';
+                inBlockScalar = true;
+                blockScalarIndent = 0; 
+                blockScalarKey = key;
+              } else {
+                lastPushedObj[key] = parseValue(val);
+              }
+              targetArray.push(lastPushedObj);
+              lastArrayIndent = arrayIndent;
+              lastKeyIndent = arrayIndent + (line.indexOf(key) - arrayIndent);
+            } else {
+              targetArray.push(parseValue(itemVal));
+              lastArrayIndent = arrayIndent;
+            }
         }
       }
       continue;
@@ -88,16 +126,18 @@ export function parseYaml(yamlString: string): any {
         let target: any = null;
         if (indent > 0 && lastPushedObj) target = lastPushedObj;
         else if (indent > 0 && currentTopLevelKey) {
-          if (!result[currentTopLevelKey]) result[currentTopLevelKey] = Object.create(null);
+          if (typeof result[currentTopLevelKey] !== 'object' || result[currentTopLevelKey] === null) result[currentTopLevelKey] = {};
           target = result[currentTopLevelKey];
         }
         else target = result;
 
         target[key] = '';
         inBlockScalar = true;
-        blockScalarIndent = indent + 2; 
+        blockScalarIndent = 0; // Will be set by next non-empty line
         blockScalarKey = key;
-        if (!lastPushedObj && indent === 0) currentTopLevelKey = key;
+        if (!lastPushedObj && indent === 0) {
+            currentTopLevelKey = key;
+        }
         continue;
       }
 
@@ -105,31 +145,45 @@ export function parseYaml(yamlString: string): any {
         if (!value) {
           lastPushedObj[key] = [];
           currentArrayKey = key;
+          lastKeyIndent = indent;
         } else {
           lastPushedObj[key] = parseValue(value);
+          lastKeyIndent = indent;
         }
         continue;
       }
 
-      if (indent > 0 && currentTopLevelKey && !lastPushedObj) {
+      if (indent > 0 && currentTopLevelKey) {
+        if (typeof result[currentTopLevelKey] !== 'object' || result[currentTopLevelKey] === null) {
+            result[currentTopLevelKey] = {};
+        }
         if (!value) {
           result[currentTopLevelKey][key] = [];
           currentArrayKey = key;
+          lastKeyIndent = indent;
         } else {
           result[currentTopLevelKey][key] = parseValue(value);
+          lastKeyIndent = indent;
         }
         continue;
       }
 
       if (!value) {
-        result[key] = Object.create(null);
+        result[key] = {};
         currentTopLevelKey = key;
         currentArrayKey = null;
         lastPushedObj = null; 
+        lastKeyIndent = 0;
         continue;
       }
       
       result[key] = parseValue(value);
+      if (indent === 0) {
+        currentTopLevelKey = key;
+        lastPushedObj = null;
+        currentArrayKey = null;
+        lastKeyIndent = 0;
+      }
     }
   }
   return result;

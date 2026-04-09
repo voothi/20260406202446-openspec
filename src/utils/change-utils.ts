@@ -48,7 +48,7 @@ export interface ValidationResult {
 export function validateChangeName(name: string): ValidationResult {
   // Pattern: starts with lowercase letter, followed by lowercase letters/numbers,
   // optionally followed by hyphen + lowercase letters/numbers (repeatable)
-  const kebabCasePattern = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
+  const kebabCasePattern = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
   if (!name) {
     return { valid: false, error: 'Change name cannot be empty' };
@@ -77,11 +77,7 @@ export function validateChangeName(name: string): ValidationResult {
     if (/[^a-z0-9-]/.test(name)) {
       return { valid: false, error: 'Change name can only contain lowercase letters, numbers, and hyphens' };
     }
-    if (/^[0-9]/.test(name)) {
-      return { valid: false, error: 'Change name must start with a letter' };
-    }
-
-    return { valid: false, error: 'Change name must follow kebab-case convention (e.g., add-auth, refactor-db)' };
+    return { valid: false, error: 'Change name must follow kebab-case convention (e.g., add-auth, 20240322-refactor)' };
   }
 
   return { valid: true };
