@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import chalk from 'chalk';
+// Zero-dependency chalk polyfill
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
 import { getTaskProgressForChange, formatTaskStatus } from '../utils/task-progress.js';
 import { MarkdownParser } from './parsers/markdown-parser.js';
 

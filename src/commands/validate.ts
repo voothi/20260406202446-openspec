@@ -1,4 +1,16 @@
-import ora from 'ora';
+// Zero-dependency polyfills
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
+const ora = (msg?: string) => ({
+  start: function() { return this; },
+  succeed: function() { return this; },
+  fail: function(e: any) { if (e) { console.error(e); } return this; },
+  stop: function() { return this; },
+  stopAndPersist: function() { return this; },
+  info: function(msg: string) { if (msg) { console.log(msg); } return this; },
+  warn: function(msg: string) { if (msg) { console.warn(msg); } return this; },
+  text: msg || ''
+}) as any;
 import path from 'path';
 import { Validator } from '../core/validation/validator.js';
 import { isInteractive, resolveNoInteractive } from '../utils/interactive.js';
@@ -64,7 +76,7 @@ export class ValidateCommand {
   }
 
   private async runInteractiveSelector(opts: { strict: boolean; json: boolean; concurrency?: string }): Promise<void> {
-    const { select } = await import('@inquirer/prompts');
+    const { select } = await import('../core/prompts.js');
     const choice = await select({
       message: 'What would you like to validate?',
       choices: [
@@ -81,16 +93,18 @@ export class ValidateCommand {
 
     // one
     const [changes, specs] = await Promise.all([getActiveChangeIds(), getSpecIds()]);
-    const items: { name: string; value: { type: ItemType; id: string } }[] = [];
-    items.push(...changes.map(id => ({ name: `change/${id}`, value: { type: 'change' as const, id } })));
-    items.push(...specs.map(id => ({ name: `spec/${id}`, value: { type: 'spec' as const, id } })));
+    const items: { name: string; value: string }[] = [];
+    items.push(...changes.map(id => ({ name: `change/${id}`, value: `change:${id}` })));
+    items.push(...specs.map(id => ({ name: `spec/${id}`, value: `spec:${id}` })));
     if (items.length === 0) {
       console.error('No items found to validate.');
       process.exitCode = 1;
       return;
     }
-    const picked = await select<{ type: ItemType; id: string }>({ message: 'Pick an item', choices: items });
-    await this.validateByType(picked.type, picked.id, opts);
+    const pickedStr = await select({ message: 'Pick an item', choices: items });
+    const [type, ...rest] = pickedStr.split(':');
+    const id = rest.join(':');
+    await this.validateByType(type as ItemType, id, opts);
   }
 
   private printNonInteractiveHint(): void {

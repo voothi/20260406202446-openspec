@@ -1,6 +1,5 @@
-import { Command } from 'commander';
+import { CliRouter } from '../core/cli-router.js';
 import { createRequire } from 'module';
-import ora from 'ora';
 import path from 'path';
 import { promises as fs } from 'fs';
 import { AI_TOOLS } from '../core/config.js';
@@ -23,69 +22,31 @@ import {
   templatesCommand,
   schemasCommand,
   newChangeCommand,
-  DEFAULT_SCHEMA,
-  type StatusOptions,
-  type InstructionsOptions,
-  type TemplatesOptions,
-  type SchemasOptions,
-  type NewChangeOptions,
 } from '../commands/workflow/index.js';
-import { maybeShowTelemetryNotice, trackCommand, shutdown } from '../telemetry/index.js';
 
-const program = new Command();
+// Zero-dependency polyfills
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
+const ora = (msg?: string) => ({
+  start: function() { if (msg) console.log(msg); return this; },
+  succeed: function() { return this; },
+  fail: function(e: any) { if (e) { console.error(e); } return this; },
+  stop: function() { return this; },
+  stopAndPersist: function() { return this; },
+  info: function(msg: string) { if (msg) { console.log(msg); } return this; },
+  warn: function(msg: string) { if (msg) { console.warn(msg); } return this; },
+  text: msg || ''
+}) as any;
+
+const program: any = new CliRouter();
 const require = createRequire(import.meta.url);
-const { version } = require('../../package.json');
-
-/**
- * Get the full command path for nested commands.
- * For example: 'change show' -> 'change:show'
- */
-function getCommandPath(command: Command): string {
-  const names: string[] = [];
-  let current: Command | null = command;
-
-  while (current) {
-    const name = current.name();
-    // Skip the root 'openspec' command
-    if (name && name !== 'openspec') {
-      names.unshift(name);
-    }
-    current = current.parent;
-  }
-
-  return names.join(':') || 'openspec';
-}
+const packageJson = JSON.parse(await fs.readFile(new URL('../../package.json', import.meta.url), 'utf8'));
+const { version } = packageJson;
 
 program
   .name('openspec')
   .description('AI-native system for spec-driven development')
   .version(version);
-
-// Global options
-program.option('--no-color', 'Disable color output');
-
-// Apply global flags and telemetry before any command runs
-// Note: preAction receives (thisCommand, actionCommand) where:
-// - thisCommand: the command where hook was added (root program)
-// - actionCommand: the command actually being executed (subcommand)
-program.hook('preAction', async (thisCommand, actionCommand) => {
-  const opts = thisCommand.opts();
-  if (opts.color === false) {
-    process.env.NO_COLOR = '1';
-  }
-
-  // Show first-run telemetry notice (if not seen)
-  await maybeShowTelemetryNotice();
-
-  // Track command execution (use actionCommand to get the actual subcommand)
-  const commandPath = getCommandPath(actionCommand);
-  await trackCommand(commandPath, version);
-});
-
-// Shutdown telemetry after command completes
-program.hook('postAction', async () => {
-  await shutdown();
-});
 
 const availableToolIds = AI_TOOLS.filter((tool) => tool.skillsDir).map((tool) => tool.value);
 const toolsOptionDescription = `Configure AI tools non-interactively. Use "all", "none", or a comma-separated list of: ${availableToolIds.join(', ')}`;
@@ -96,42 +57,22 @@ program
   .option('--tools <tools>', toolsOptionDescription)
   .option('--force', 'Auto-cleanup legacy files without prompting')
   .option('--profile <profile>', 'Override global config profile (core or custom)')
-  .action(async (targetPath = '.', options?: { tools?: string; force?: boolean; profile?: string }) => {
+  .action(async (targetPath: string = '.', options?: { tools?: string; force?: boolean; profile?: string }) => {
     try {
-      // Validate that the path is a valid directory
       const resolvedPath = path.resolve(targetPath);
-
-      try {
-        const stats = await fs.stat(resolvedPath);
-        if (!stats.isDirectory()) {
-          throw new Error(`Path "${targetPath}" is not a directory`);
-        }
-      } catch (error: any) {
-        if (error.code === 'ENOENT') {
-          // Directory doesn't exist, but we can create it
-          console.log(`Directory "${targetPath}" doesn't exist, it will be created.`);
-        } else if (error.message && error.message.includes('not a directory')) {
-          throw error;
-        } else {
-          throw new Error(`Cannot access path "${targetPath}": ${error.message}`);
-        }
-      }
-
       const { InitCommand } = await import('../core/init.js');
       const initCommand = new InitCommand({
         tools: options?.tools,
         force: options?.force,
         profile: options?.profile,
       });
-      await initCommand.execute(targetPath);
+      await initCommand.execute(resolvedPath);
     } catch (error) {
-      console.log(); // Empty line for spacing
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-// Hidden alias: 'experimental' -> 'init' for backwards compatibility
 program
   .command('experimental', { hidden: true })
   .description('Alias for init (deprecated)')
@@ -147,8 +88,7 @@ program
       });
       await initCommand.execute('.');
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
@@ -157,14 +97,13 @@ program
   .command('update [path]')
   .description('Update OpenSpec instruction files')
   .option('--force', 'Force update even when tools are up to date')
-  .action(async (targetPath = '.', options?: { force?: boolean }) => {
+  .action(async (targetPath: string = '.', options?: { force?: boolean }) => {
     try {
       const resolvedPath = path.resolve(targetPath);
       const updateCommand = new UpdateCommand({ force: options?.force });
       await updateCommand.execute(resolvedPath);
     } catch (error) {
-      console.log(); // Empty line for spacing
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
@@ -183,8 +122,7 @@ program
       const sort = options?.sort === 'name' ? 'name' : 'recent';
       await listCommand.execute('.', mode, { sort, json: options?.json });
     } catch (error) {
-      console.log(); // Empty line for spacing
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
@@ -197,21 +135,14 @@ program
       const viewCommand = new ViewCommand();
       await viewCommand.execute('.');
     } catch (error) {
-      console.log(); // Empty line for spacing
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-// Change command with subcommands
-const changeCmd = program
+const changeCmd: any = program
   .command('change')
   .description('Manage OpenSpec change proposals');
-
-// Deprecation notice for noun-based commands
-changeCmd.hook('preAction', () => {
-  console.error('Warning: The "openspec change ..." commands are deprecated. Prefer verb-first commands (e.g., "openspec list", "openspec validate --changes").');
-});
 
 changeCmd
   .command('show [change-name]')
@@ -276,8 +207,7 @@ program
       const archiveCommand = new ArchiveCommand();
       await archiveCommand.execute(changeName, options);
     } catch (error) {
-      console.log(); // Empty line for spacing
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
@@ -286,7 +216,6 @@ registerSpecCommand(program);
 registerConfigCommand(program);
 registerSchemaCommand(program);
 
-// Top-level validate command
 program
   .command('validate [item-name]')
   .description('Validate changes and specs')
@@ -296,47 +225,39 @@ program
   .option('--type <type>', 'Specify item type when ambiguous: change|spec')
   .option('--strict', 'Enable strict validation mode')
   .option('--json', 'Output validation results as JSON')
-  .option('--concurrency <n>', 'Max concurrent validations (defaults to env OPENSPEC_CONCURRENCY or 6)')
+  .option('--concurrency <n>', 'Max concurrent validations')
   .option('--no-interactive', 'Disable interactive prompts')
-  .action(async (itemName?: string, options?: { all?: boolean; changes?: boolean; specs?: boolean; type?: string; strict?: boolean; json?: boolean; noInteractive?: boolean; concurrency?: string }) => {
+  .action(async (itemName?: string, options?: any) => {
     try {
       const validateCommand = new ValidateCommand();
       await validateCommand.execute(itemName, options);
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-// Top-level show command
 program
   .command('show [item-name]')
   .description('Show a change or spec')
   .option('--json', 'Output as JSON')
   .option('--type <type>', 'Specify item type when ambiguous: change|spec')
   .option('--no-interactive', 'Disable interactive prompts')
-  // change-only flags
   .option('--deltas-only', 'Show only deltas (JSON only, change)')
   .option('--requirements-only', 'Alias for --deltas-only (deprecated, change)')
-  // spec-only flags
   .option('--requirements', 'JSON only: Show only requirements (exclude scenarios)')
   .option('--no-scenarios', 'JSON only: Exclude scenario content')
   .option('-r, --requirement <id>', 'JSON only: Show specific requirement by ID (1-based)')
-  // allow unknown options to pass-through to underlying command implementation
-  .allowUnknownOption(true)
-  .action(async (itemName?: string, options?: { json?: boolean; type?: string; noInteractive?: boolean; [k: string]: any }) => {
+  .action(async (itemName?: string, options?: any) => {
     try {
       const showCommand = new ShowCommand();
       await showCommand.execute(itemName, options ?? {});
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-// Feedback command
 program
   .command('feedback <message>')
   .description('Submit feedback about OpenSpec')
@@ -346,27 +267,24 @@ program
       const feedbackCommand = new FeedbackCommand();
       await feedbackCommand.execute(message, options);
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-// Completion command with subcommands
-const completionCmd = program
+const completionCmd: any = program
   .command('completion')
   .description('Manage shell completions for OpenSpec CLI');
 
 completionCmd
   .command('generate [shell]')
-  .description('Generate completion script for a shell (outputs to stdout)')
+  .description('Generate completion script for a shell')
   .action(async (shell?: string) => {
     try {
       const completionCommand = new CompletionCommand();
       await completionCommand.generate({ shell });
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
@@ -380,8 +298,7 @@ completionCmd
       const completionCommand = new CompletionCommand();
       await completionCommand.install({ shell, verbose: options?.verbose });
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
@@ -395,116 +312,99 @@ completionCmd
       const completionCommand = new CompletionCommand();
       await completionCommand.uninstall({ shell, yes: options?.yes });
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-// Hidden command for machine-readable completion data
 program
   .command('__complete <type>', { hidden: true })
-  .description('Output completion data in machine-readable format (internal use)')
+  .description('Output completion data in machine-readable format')
   .action(async (type: string) => {
     try {
       const completionCommand = new CompletionCommand();
       await completionCommand.complete({ type });
     } catch (error) {
-      // Silently fail for graceful shell completion experience
       process.exitCode = 1;
     }
   });
 
-// ═══════════════════════════════════════════════════════════
-// Workflow Commands (formerly experimental)
-// ═══════════════════════════════════════════════════════════
-
-// Status command
 program
   .command('status')
   .description('Display artifact completion status for a change')
-  .option('--change <id>', 'Change name to show status for')
-  .option('--schema <name>', 'Schema override (auto-detected from config.yaml)')
+  .option('--change <id>', 'Change name')
+  .option('--schema <name>', 'Schema override')
   .option('--json', 'Output as JSON')
-  .action(async (options: StatusOptions) => {
+  .action(async (options: any) => {
     try {
       await statusCommand(options);
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-// Instructions command
 program
   .command('instructions [artifact]')
-  .description('Output enriched instructions for creating an artifact or applying tasks')
+  .description('Output enriched instructions')
   .option('--change <id>', 'Change name')
-  .option('--schema <name>', 'Schema override (auto-detected from config.yaml)')
+  .option('--schema <name>', 'Schema override')
   .option('--json', 'Output as JSON')
-  .action(async (artifactId: string | undefined, options: InstructionsOptions) => {
+  .action(async (artifactId: string | undefined, options: any) => {
     try {
-      // Special case: "apply" is not an artifact, but a command to get apply instructions
       if (artifactId === 'apply') {
+        const { applyInstructionsCommand } = await import('../commands/workflow/index.js');
         await applyInstructionsCommand(options);
       } else {
         await instructionsCommand(artifactId, options);
       }
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-// Templates command
 program
   .command('templates')
-  .description('Show resolved template paths for all artifacts in a schema')
-  .option('--schema <name>', `Schema to use (default: ${DEFAULT_SCHEMA})`)
-  .option('--json', 'Output as JSON mapping artifact IDs to template paths')
-  .action(async (options: TemplatesOptions) => {
+  .description('Show resolved template paths')
+  .option('--schema <name>', 'Schema to use')
+  .option('--json', 'Output as JSON')
+  .action(async (options: any) => {
     try {
       await templatesCommand(options);
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-// Schemas command
 program
   .command('schemas')
-  .description('List available workflow schemas with descriptions')
-  .option('--json', 'Output as JSON (for agent use)')
-  .action(async (options: SchemasOptions) => {
+  .description('List available workflow schemas')
+  .option('--json', 'Output as JSON')
+  .action(async (options: any) => {
     try {
       await schemasCommand(options);
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-// New command group with change subcommand
-const newCmd = program.command('new').description('Create new items');
+const newCmd: any = program.command('new').description('Create new items');
 
 newCmd
   .command('change <name>')
   .description('Create a new change directory')
-  .option('--description <text>', 'Description to add to README.md')
-  .option('--schema <name>', `Workflow schema to use (default: ${DEFAULT_SCHEMA})`)
-  .action(async (name: string, options: NewChangeOptions) => {
+  .option('--description <text>', 'Description')
+  .option('--schema <name>', 'Schema')
+  .action(async (name: string, options: any) => {
     try {
       await newChangeCommand(name, options);
     } catch (error) {
-      console.log();
-      ora().fail(`Error: ${(error as Error).message}`);
+      console.error(`\nError: ${(error as Error).message}`);
       process.exit(1);
     }
   });
 
-program.parse();
+await program.parse();

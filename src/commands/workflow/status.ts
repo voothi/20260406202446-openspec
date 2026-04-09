@@ -4,8 +4,19 @@
  * Displays artifact completion status for a change.
  */
 
-import ora from 'ora';
-import chalk from 'chalk';
+// Zero-dependency replacements
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
+const ora = (msg?: string) => ({
+  start: function() { if (msg) console.log(msg); return this; },
+  succeed: function() { return this; },
+  fail: function(e: any) { if (e) { console.error(e); } return this; },
+  stop: function() { return this; },
+  stopAndPersist: function() { return this; },
+  info: function(msg: string) { if (msg) { console.log(msg); } return this; },
+  warn: function(msg: string) { if (msg) { console.warn(msg); } return this; },
+  text: msg || ''
+}) as any;
 import {
   loadChangeContext,
   formatChangeStatus,

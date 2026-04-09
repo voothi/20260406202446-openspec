@@ -17,14 +17,14 @@ export class ShowCommand {
 
     if (!itemName) {
       if (interactive) {
-        const { select } = await import('@inquirer/prompts');
-        const type = await select<ItemType>({
+        const { select } = await import('../core/prompts.js');
+        const type = (await select({
           message: 'What would you like to show?',
           choices: [
             { name: 'Change', value: 'change' as const },
             { name: 'Spec', value: 'spec' as const },
           ],
-        });
+        })) as ItemType;
         await this.runInteractiveByType(type, options);
         return;
       }
@@ -44,7 +44,7 @@ export class ShowCommand {
   }
 
   private async runInteractiveByType(type: ItemType, options: { json?: boolean; noInteractive?: boolean; [k: string]: any }): Promise<void> {
-    const { select } = await import('@inquirer/prompts');
+    const { select } = await import('../core/prompts.js');
     if (type === 'change') {
       const changes = await getActiveChangeIds();
       if (changes.length === 0) {
@@ -52,7 +52,7 @@ export class ShowCommand {
         process.exitCode = 1;
         return;
       }
-      const picked = await select<string>({ message: 'Pick a change', choices: changes.map(id => ({ name: id, value: id })) });
+      const picked = await select({ message: 'Pick a change', choices: changes.map(id => ({ name: id, value: id })) });
       const cmd = new ChangeCommand();
       await cmd.show(picked, options as any);
       return;
@@ -64,7 +64,7 @@ export class ShowCommand {
       process.exitCode = 1;
       return;
     }
-    const picked = await select<string>({ message: 'Pick a spec', choices: specs.map(id => ({ name: id, value: id })) });
+    const picked = await select({ message: 'Pick a spec', choices: specs.map(id => ({ name: id, value: id })) });
     const cmd = new SpecCommand();
     await cmd.show(picked, options as any);
   }

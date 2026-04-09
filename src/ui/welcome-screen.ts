@@ -3,7 +3,9 @@
  * Shows side-by-side layout with animated ASCII art on left and welcome text on right.
  */
 
-import chalk from 'chalk';
+// Zero-dependency chalk polyfill
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
 import { WELCOME_ANIMATION } from './ascii-patterns.js';
 
 // Minimum terminal width for side-by-side layout

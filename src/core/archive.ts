@@ -2,7 +2,9 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { getTaskProgressForChange, formatTaskStatus } from '../utils/task-progress.js';
 import { Validator } from './validation/validator.js';
-import chalk from 'chalk';
+// Zero-dependency polyfills
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
 import {
   findSpecUpdates,
   buildUpdatedSpec,
@@ -154,7 +156,7 @@ export class ArchiveCommand {
       const timestamp = new Date().toISOString();
       
       if (!options.yes) {
-        const { confirm } = await import('@inquirer/prompts');
+        const { confirm } = await import('./prompts.js');
         const proceed = await confirm({
           message: chalk.yellow('⚠️  WARNING: Skipping validation may archive invalid specs. Continue? (y/N)'),
           default: false
@@ -179,7 +181,7 @@ export class ArchiveCommand {
     const incompleteTasks = Math.max(progress.total - progress.completed, 0);
     if (incompleteTasks > 0) {
       if (!options.yes) {
-        const { confirm } = await import('@inquirer/prompts');
+        const { confirm } = await import('./prompts.js');
         const proceed = await confirm({
           message: `Warning: ${incompleteTasks} incomplete task(s) found. Continue?`,
           default: false
@@ -210,7 +212,7 @@ export class ArchiveCommand {
 
         let shouldUpdateSpecs = true;
         if (!options.yes) {
-          const { confirm } = await import('@inquirer/prompts');
+          const { confirm } = await import('./prompts.js');
           shouldUpdateSpecs = await confirm({
             message: 'Proceed with spec updates?',
             default: true
@@ -264,8 +266,8 @@ export class ArchiveCommand {
       }
     }
 
-    // Create archive directory with date prefix
-    const archiveName = `${this.getArchiveDate()}-${changeName}`;
+    // Create archive directory with date prefix (skip if changeName already has ZID)
+    const archiveName = /^\d{14}-/i.test(changeName) ? changeName : `${this.getArchiveDate()}-${changeName}`;
     const archivePath = path.join(archiveDir, archiveName);
 
     // Check if archive already exists
@@ -288,7 +290,7 @@ export class ArchiveCommand {
   }
 
   private async selectChange(changesDir: string): Promise<string | null> {
-    const { select } = await import('@inquirer/prompts');
+    const { select } = await import('./prompts.js');
     // Get all directories in changes (excluding archive)
     const entries = await fs.readdir(changesDir, { withFileTypes: true });
     const changeDirs = entries

@@ -1,4 +1,16 @@
-import { program } from 'commander';
+// Zero-dependency replacements
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
+const ora = (msg?: string) => ({
+  start: function() { return this; },
+  succeed: function() { return this; },
+  fail: function(e: any) { if (e) { console.error(e); } return this; },
+  stop: function() { return this; },
+  stopAndPersist: function() { return this; },
+  info: function(msg: string) { if (msg) { console.log(msg); } return this; },
+  warn: function(msg: string) { if (msg) { console.warn(msg); } return this; },
+  text: msg || ''
+}) as any;
 import { existsSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { MarkdownParser } from '../core/parsers/markdown-parser.js';
@@ -72,7 +84,7 @@ export class SpecCommand {
       const canPrompt = isInteractive(options);
       const specIds = await getSpecIds();
       if (canPrompt && specIds.length > 0) {
-        const { select } = await import('@inquirer/prompts');
+        const { select } = await import('../core/prompts.js');
         specId = await select({
           message: 'Select a spec to show',
           choices: specIds.map(id => ({ name: id, value: id })),
@@ -108,7 +120,7 @@ export class SpecCommand {
   }
 }
 
-export function registerSpecCommand(rootProgram: typeof program) {
+export function registerSpecCommand(rootProgram: any) {
   const specCommand = rootProgram
     .command('spec')
     .description('Manage and view OpenSpec specifications');
@@ -207,7 +219,7 @@ export function registerSpecCommand(rootProgram: typeof program) {
           const canPrompt = isInteractive(options);
           const specIds = await getSpecIds();
           if (canPrompt && specIds.length > 0) {
-            const { select } = await import('@inquirer/prompts');
+            const { select } = await import('../core/prompts.js');
             specId = await select({
               message: 'Select a spec to validate',
               choices: specIds.map(id => ({ name: id, value: id })),

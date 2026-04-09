@@ -5,7 +5,9 @@
 
 import path from 'path';
 import { promises as fs } from 'fs';
-import chalk from 'chalk';
+// Zero-dependency chalk polyfill
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
 import { FileSystemUtils, removeMarkerBlock as removeMarkerBlockUtil } from '../utils/file-system.js';
 import { OPENSPEC_MARKERS } from './config.js';
 

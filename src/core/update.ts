@@ -6,8 +6,19 @@
  */
 
 import path from 'path';
-import chalk from 'chalk';
-import ora from 'ora';
+// Zero-dependency polyfills
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
+const ora = (msg?: string) => ({
+  start: function() { return this; },
+  succeed: function() { return this; },
+  fail: function(e: any) { if (e) { console.error(e); } return this; },
+  stop: function() { return this; },
+  stopAndPersist: function() { return this; },
+  info: function(msg: string) { if (msg) { console.log(msg); } return this; },
+  warn: function(msg: string) { if (msg) { console.warn(msg); } return this; },
+  text: msg || ''
+}) as any;
 import * as fs from 'fs';
 import { createRequire } from 'module';
 import { FileSystemUtils } from '../utils/file-system.js';
@@ -528,7 +539,7 @@ export class UpdateCommand {
     }
 
     // Interactive mode: prompt for confirmation
-    const { confirm } = await import('@inquirer/prompts');
+    const { confirm } = await import('./prompts.js');
     const shouldCleanup = await confirm({
       message: 'Upgrade and clean up legacy files?',
       default: true,
@@ -617,7 +628,7 @@ export class UpdateCommand {
       console.log(`Setting up skills for: ${selectedTools.join(', ')}`);
     } else {
       // Interactive mode: prompt for tool selection with detected tools pre-selected
-      const { searchableMultiSelect } = await import('../prompts/searchable-multi-select.js');
+      const { checkbox: searchableMultiSelect } = await import('./prompts.js');
 
       const sortedChoices = validUnconfiguredTools.map((toolId) => {
         const tool = AI_TOOLS.find((t) => t.value === toolId);
@@ -631,9 +642,7 @@ export class UpdateCommand {
 
       selectedTools = await searchableMultiSelect({
         message: 'Select tools to set up with the new skill system:',
-        pageSize: 15,
         choices: sortedChoices,
-        validate: (_selected: string[]) => true, // Allow empty selection (user can skip)
       });
 
       if (selectedTools.length === 0) {

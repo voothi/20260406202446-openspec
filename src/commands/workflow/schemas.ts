@@ -4,7 +4,9 @@
  * Lists available workflow schemas with descriptions.
  */
 
-import chalk from 'chalk';
+// Zero-dependency chalk polyfill
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
 import { listSchemasWithInfo } from '../../core/artifact-graph/index.js';
 
 // -----------------------------------------------------------------------------

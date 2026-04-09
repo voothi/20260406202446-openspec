@@ -32,7 +32,7 @@ export class ChangeCommand {
       const canPrompt = isInteractive(options);
       const changes = await this.getActiveChanges(changesPath);
       if (canPrompt && changes.length > 0) {
-        const { select } = await import('@inquirer/prompts');
+        const { select } = await import('../core/prompts.js');
         const selected = await select({
           message: 'Select a change to show',
           choices: changes.map(id => ({ name: id, value: id })),
@@ -189,7 +189,7 @@ export class ChangeCommand {
       const canPrompt = isInteractive(options);
       const changes = await getActiveChangeIds();
       if (canPrompt && changes.length > 0) {
-        const { select } = await import('@inquirer/prompts');
+        const { select } = await import('../core/prompts.js');
         const selected = await select({
           message: 'Select a change to validate',
           choices: changes.map(id => ({ name: id, value: id })),

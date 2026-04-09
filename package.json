@@ -42,18 +42,18 @@
     "lint": "eslint src/",
     "build": "node build.js",
     "dev": "tsc --watch",
-    "dev:cli": "pnpm build && node bin/openspec.js",
+    "dev:cli": "npm run build && node bin/openspec.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "test:postinstall": "node scripts/postinstall.js",
-    "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run build",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build",
     "postinstall": "node scripts/postinstall.js",
     "check:pack-version": "node scripts/pack-version-check.mjs",
-    "release": "pnpm run release:ci",
-    "release:ci": "pnpm run check:pack-version && pnpm exec changeset publish",
+    "release": "npm run release:ci",
+    "release:ci": "npm run check:pack-version && npm exec changeset publish",
     "changeset": "changeset"
   },
   "engines": {
@@ -69,15 +69,5 @@
     "typescript-eslint": "^8.50.1",
     "vitest": "^3.2.4"
   },
-  "dependencies": {
-    "@inquirer/core": "^10.2.2",
-    "@inquirer/prompts": "^7.8.0",
-    "chalk": "^5.5.0",
-    "commander": "^14.0.0",
-    "fast-glob": "^3.3.3",
-    "ora": "^8.2.0",
-    "posthog-node": "^5.20.0",
-    "yaml": "^2.8.2",
-    "zod": "^4.0.17"
-  }
+  "dependencies": {}
 }

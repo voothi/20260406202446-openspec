@@ -5,7 +5,9 @@
  * multiple artifact workflow commands.
  */
 
-import chalk from 'chalk';
+// Zero-dependency chalk polyfill
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
 import path from 'path';
 import * as fs from 'fs';
 import { getSchemaDir, listSchemas } from '../../core/artifact-graph/index.js';

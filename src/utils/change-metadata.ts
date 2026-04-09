@@ -1,9 +1,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import * as yaml from 'yaml';
+import { parseYaml, stringifyYaml } from '../core/parsers/yaml-parser.js';
 import { ChangeMetadataSchema, type ChangeMetadata } from '../core/artifact-graph/types.js';
 import { listSchemas } from '../core/artifact-graph/resolver.js';
 import { readProjectConfig } from '../core/project-config.js';
+import { validate } from '../core/validate.js';
 
 const METADATA_FILENAME = '.openspec.yaml';
 
@@ -60,17 +61,19 @@ export function writeChangeMetadata(
   // Validate schema exists
   validateSchemaName(metadata.schema, projectRoot);
 
-  // Validate with Zod
-  const parseResult = ChangeMetadataSchema.safeParse(metadata);
+  // Validate with zero-dependency validator
+  const parseResult = validate(metadata, ChangeMetadataSchema);
   if (!parseResult.success) {
     throw new ChangeMetadataError(
-      `Invalid metadata: ${parseResult.error.message}`,
+      `Invalid metadata: ${parseResult.errors.join(', ')}`,
       metaPath
     );
   }
+  
+  const validatedMetadata = metadata as ChangeMetadata;
 
   // Write YAML file
-  const content = yaml.stringify(parseResult.data);
+  const content = stringifyYaml(validatedMetadata);
   try {
     fs.writeFileSync(metaPath, content, 'utf-8');
   } catch (err) {
@@ -115,7 +118,7 @@ export function readChangeMetadata(
 
   let parsed: unknown;
   try {
-    parsed = yaml.parse(content);
+    parsed = parseYaml(content);
   } catch (err) {
     const parseError = err instanceof Error ? err : new Error(String(err));
     throw new ChangeMetadataError(
@@ -125,25 +128,27 @@ export function readChangeMetadata(
     );
   }
 
-  // Validate with Zod
-  const parseResult = ChangeMetadataSchema.safeParse(parsed);
+  // Validate with zero-dependency validator
+  const parseResult = validate(parsed, ChangeMetadataSchema);
   if (!parseResult.success) {
     throw new ChangeMetadataError(
-      `Invalid metadata: ${parseResult.error.message}`,
+      `Invalid metadata: ${parseResult.errors.join(', ')}`,
       metaPath
     );
   }
+
+  const validatedData = parsed as ChangeMetadata;
 
   // Validate that the schema exists
   const availableSchemas = listSchemas(projectRoot);
-  if (!availableSchemas.includes(parseResult.data.schema)) {
+  if (!availableSchemas.includes(validatedData.schema)) {
     throw new ChangeMetadataError(
-      `Unknown schema '${parseResult.data.schema}'. Available: ${availableSchemas.join(', ')}`,
+      `Unknown schema '${validatedData.schema}'. Available: ${availableSchemas.join(', ')}`,
       metaPath
     );
   }
 
-  return parseResult.data;
+  return validatedData;
 }
 
 /**

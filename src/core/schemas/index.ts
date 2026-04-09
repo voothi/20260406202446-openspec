@@ -11,7 +11,6 @@ export {
 } from './spec.schema.js';
 
 export {
-  DeltaOperationType,
   DeltaSchema,
   ChangeSchema,
   type DeltaOperation,

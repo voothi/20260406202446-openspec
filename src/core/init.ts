@@ -6,8 +6,19 @@
  */
 
 import path from 'path';
-import chalk from 'chalk';
-import ora from 'ora';
+// Zero-dependency polyfills
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
+const ora = (msg?: string) => ({
+  start: function() { return this; },
+  succeed: function() { return this; },
+  fail: function(e: any) { if (e) { console.error(e); } return this; },
+  stop: function() { return this; },
+  stopAndPersist: function() { return this; },
+  info: function(msg: string) { if (msg) { console.log(msg); } return this; },
+  warn: function(msg: string) { if (msg) { console.warn(msg); } return this; },
+  text: msg || ''
+}) as any;
 import * as fs from 'fs';
 import { createRequire } from 'module';
 import { FileSystemUtils } from '../utils/file-system.js';
@@ -217,7 +228,7 @@ export class InitCommand {
     }
 
     // Interactive mode: prompt for confirmation
-    const { confirm } = await import('@inquirer/prompts');
+    const { confirm } = await import('./prompts.js');
     const shouldCleanup = await confirm({
       message: 'Upgrade and clean up legacy files?',
       default: true,
@@ -291,7 +302,7 @@ export class InitCommand {
     }
 
     // Interactive mode: show searchable multi-select
-    const { searchableMultiSelect } = await import('../prompts/searchable-multi-select.js');
+    const { checkbox: searchableMultiSelect } = await import('./prompts.js');
 
     // Build choices: pre-select configured tools; keep detected tools visible but unselected.
     const sortedChoices = validTools
@@ -338,10 +349,8 @@ export class InitCommand {
     }
 
     const selectedTools = await searchableMultiSelect({
-      message: `Select tools to set up (${validTools.length} available)`,
-      pageSize: 15,
+      message: 'Select tools to set up with the new skill system:',
       choices: sortedChoices,
-      validate: (selected: string[]) => selected.length > 0 || 'Select at least one tool',
     });
 
     if (selectedTools.length === 0) {
@@ -726,12 +735,7 @@ export class InitCommand {
   }
 
   private startSpinner(text: string) {
-    return ora({
-      text,
-      stream: process.stdout,
-      color: 'gray',
-      spinner: PROGRESS_SPINNER,
-    }).start();
+    return ora(text).start();
   }
 
   private async removeSkillDirs(skillsDir: string): Promise<number> {

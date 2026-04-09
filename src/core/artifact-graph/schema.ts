@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
-import { parse as parseYaml } from 'yaml';
+import { parseYaml } from '../parsers/yaml-parser.js';
 import { SchemaYamlSchema, type SchemaYaml, type Artifact } from './types.js';
+import { validate } from '../validate.js';
 
 export class SchemaValidationError extends Error {
   constructor(message: string) {
@@ -23,14 +24,15 @@ export function loadSchema(filePath: string): SchemaYaml {
 export function parseSchema(yamlContent: string): SchemaYaml {
   const parsed = parseYaml(yamlContent);
 
-  // Validate with Zod
-  const result = SchemaYamlSchema.safeParse(parsed);
+  // Validate with zero-dependency validator
+  const result = validate(parsed, SchemaYamlSchema);
   if (!result.success) {
-    const errors = result.error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+    const errors = result.errors.join(', ');
     throw new SchemaValidationError(`Invalid schema: ${errors}`);
   }
 
-  const schema = result.data;
+  // Schema is now typed as SchemaYaml because validate ensures structure
+  const schema = parsed as SchemaYaml;
 
   // Check for duplicate artifact IDs
   validateNoDuplicateIds(schema.artifacts);
@@ -64,11 +66,13 @@ function validateRequiresReferences(artifacts: Artifact[]): void {
   const validIds = new Set(artifacts.map(a => a.id));
 
   for (const artifact of artifacts) {
-    for (const req of artifact.requires) {
-      if (!validIds.has(req)) {
-        throw new SchemaValidationError(
-          `Invalid dependency reference in artifact '${artifact.id}': '${req}' does not exist`
-        );
+    if (artifact.requires) {
+      for (const req of artifact.requires) {
+        if (!validIds.has(req)) {
+          throw new SchemaValidationError(
+            `Invalid dependency reference in artifact '${artifact.id}': '${req}' does not exist`
+          );
+        }
       }
     }
   }
@@ -91,21 +95,23 @@ function validateNoCycles(artifacts: Artifact[]): void {
     const artifact = artifactMap.get(id);
     if (!artifact) return null;
 
-    for (const dep of artifact.requires) {
-      if (!visited.has(dep)) {
-        parent.set(dep, id);
-        const cycle = dfs(dep);
-        if (cycle) return cycle;
-      } else if (inStack.has(dep)) {
-        // Found a cycle - reconstruct the path
-        const cyclePath = [dep];
-        let current = id;
-        while (current !== dep) {
-          cyclePath.unshift(current);
-          current = parent.get(current)!;
+    if (artifact.requires) {
+      for (const dep of artifact.requires) {
+        if (!visited.has(dep)) {
+          parent.set(dep, id);
+          const cycle = dfs(dep);
+          if (cycle) return cycle;
+        } else if (inStack.has(dep)) {
+          // Found a cycle - reconstruct the path
+          const cyclePath = [dep];
+          let current = id;
+          while (current !== dep) {
+            cyclePath.unshift(current);
+            current = parent.get(current)!;
+          }
+          cyclePath.unshift(dep);
+          return cyclePath.join(' → ');
         }
-        cyclePath.unshift(dep);
-        return cyclePath.join(' → ');
       }
     }
 

@@ -1,7 +1,7 @@
-import { z, ZodError } from 'zod';
 import { readFileSync, promises as fs } from 'fs';
 import path from 'path';
 import { SpecSchema, ChangeSchema, Spec, Change } from '../schemas/index.js';
+import { validate } from '../validate.js';
 import { MarkdownParser } from '../parsers/markdown-parser.js';
 import { ChangeParser } from '../parsers/change-parser.js';
 import { ValidationReport, ValidationIssue, ValidationLevel } from './types.js';
@@ -29,10 +29,10 @@ export class Validator {
       
       const spec = parser.parseSpec(specName);
       
-      const result = SpecSchema.safeParse(spec);
+      const result = validate(spec, SpecSchema);
       
       if (!result.success) {
-        issues.push(...this.convertZodErrors(result.error));
+        issues.push(...this.convertValidationErrors(result.errors));
       }
       
       issues.push(...this.applySpecRules(spec, content));
@@ -58,9 +58,9 @@ export class Validator {
     try {
       const parser = new MarkdownParser(content);
       const spec = parser.parseSpec(specName);
-      const result = SpecSchema.safeParse(spec);
+      const result = validate(spec, SpecSchema);
       if (!result.success) {
-        issues.push(...this.convertZodErrors(result.error));
+        issues.push(...this.convertValidationErrors(result.errors));
       }
       issues.push(...this.applySpecRules(spec, content));
     } catch (error) {
@@ -81,10 +81,10 @@ export class Validator {
       
       const change = await parser.parseChangeWithDeltas(changeName);
       
-      const result = ChangeSchema.safeParse(change);
+      const result = validate(change, ChangeSchema);
       
       if (!result.success) {
-        issues.push(...this.convertZodErrors(result.error));
+        issues.push(...this.convertValidationErrors(result.errors));
       }
       
       issues.push(...this.applyChangeRules(change, content));
@@ -104,12 +104,6 @@ export class Validator {
 
   /**
    * Validate delta-formatted spec files under a change directory.
-   * Enforces:
-   * - At least one delta across all files
-   * - ADDED/MODIFIED: each requirement has SHALL/MUST and at least one scenario
-   * - REMOVED: names only; no scenario/description required
-   * - RENAMED: pairs well-formed
-   * - No duplicates within sections; no cross-section conflicts per spec
    */
   async validateChangeDeltaSpecs(changeDir: string): Promise<ValidationReport> {
     const issues: ValidationIssue[] = [];
@@ -221,7 +215,7 @@ export class Validator {
           }
         }
 
-        // Cross-section conflicts (within the same spec file)
+        // Cross-section conflicts
         for (const n of modifiedNames) {
           if (removedNames.has(n)) {
             issues.push({ level: 'ERROR', path: entryPath, message: `Requirement present in both MODIFIED and REMOVED: "${n}"` });
@@ -254,7 +248,7 @@ export class Validator {
       issues.push({
         level: 'ERROR',
         path: specPath,
-        message: `Delta sections ${this.formatSectionList(sections)} were found, but no requirement entries parsed. Ensure each section includes at least one "### Requirement:" block (REMOVED may use bullet list syntax).`,
+        message: `Delta sections ${this.formatSectionList(sections)} were found, but no requirement entries parsed. Ensure each section includes at least one "### Requirement:" block.`,
       });
     }
     for (const path of missingHeaderSpecs) {
@@ -272,15 +266,15 @@ export class Validator {
     return this.createReport(issues);
   }
 
-  private convertZodErrors(error: ZodError): ValidationIssue[] {
-    return error.issues.map(err => {
-      let message = err.message;
+  private convertValidationErrors(errors: string[]): ValidationIssue[] {
+    return errors.map(err => {
+      let message = err;
       if (message === VALIDATION_MESSAGES.CHANGE_NO_DELTAS) {
         message = `${message}. ${VALIDATION_MESSAGES.GUIDE_NO_DELTAS}`;
       }
       return {
         level: 'ERROR' as ValidationLevel,
-        path: err.path.join('.'),
+        path: 'file',
         message,
       };
     });
@@ -288,7 +282,6 @@ export class Validator {
 
   private applySpecRules(spec: Spec, content: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
-    
     if (spec.overview.length < MIN_PURPOSE_LENGTH) {
       issues.push({
         level: 'WARNING',
@@ -296,7 +289,6 @@ export class Validator {
         message: VALIDATION_MESSAGES.PURPOSE_TOO_BRIEF,
       });
     }
-    
     spec.requirements.forEach((req, index) => {
       if (req.text.length > MAX_REQUIREMENT_TEXT_LENGTH) {
         issues.push({
@@ -305,7 +297,6 @@ export class Validator {
           message: VALIDATION_MESSAGES.REQUIREMENT_TOO_LONG,
         });
       }
-      
       if (req.scenarios.length === 0) {
         issues.push({
           level: 'WARNING',
@@ -314,15 +305,12 @@ export class Validator {
         });
       }
     });
-    
     return issues;
   }
 
   private applyChangeRules(change: Change, content: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
-    
     const MIN_DELTA_DESCRIPTION_LENGTH = 10;
-    
     change.deltas.forEach((delta, index) => {
       if (!delta.description || delta.description.length < MIN_DELTA_DESCRIPTION_LENGTH) {
         issues.push({
@@ -331,7 +319,6 @@ export class Validator {
           message: VALIDATION_MESSAGES.DELTA_DESCRIPTION_TOO_BRIEF,
         });
       }
-      
       if ((delta.operation === 'ADDED' || delta.operation === 'MODIFIED') && 
           (!delta.requirements || delta.requirements.length === 0)) {
         issues.push({
@@ -341,7 +328,6 @@ export class Validator {
         });
       }
     });
-    
     return issues;
   }
 
@@ -362,17 +348,11 @@ export class Validator {
   private extractNameFromPath(filePath: string): string {
     const normalizedPath = FileSystemUtils.toPosixPath(filePath);
     const parts = normalizedPath.split('/');
-    
-    // Look for the directory name after 'specs' or 'changes'
     for (let i = parts.length - 1; i >= 0; i--) {
       if (parts[i] === 'specs' || parts[i] === 'changes') {
-        if (i < parts.length - 1) {
-          return parts[i + 1];
-        }
+        if (i < parts.length - 1) return parts[i + 1];
       }
     }
-    
-    // Fallback to filename without extension if not in expected structure
     const fileName = parts[parts.length - 1] ?? '';
     const dotIndex = fileName.lastIndexOf('.');
     return dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName;
@@ -382,19 +362,13 @@ export class Validator {
     const errors = issues.filter(i => i.level === 'ERROR').length;
     const warnings = issues.filter(i => i.level === 'WARNING').length;
     const info = issues.filter(i => i.level === 'INFO').length;
-    
     const valid = this.strictMode 
       ? errors === 0 && warnings === 0
       : errors === 0;
-    
     return {
       valid,
       issues,
-      summary: {
-        errors,
-        warnings,
-        info,
-      },
+      summary: { errors, warnings, info },
     };
   }
 
@@ -404,29 +378,15 @@ export class Validator {
 
   private extractRequirementText(blockRaw: string): string | undefined {
     const lines = blockRaw.split('\n');
-    // Skip header line (index 0)
     let i = 1;
-
-    // Find the first substantial text line, skipping metadata and blank lines
     for (; i < lines.length; i++) {
       const line = lines[i];
-
-      // Stop at scenario headers
       if (/^####\s+/.test(line)) break;
-
       const trimmed = line.trim();
-
-      // Skip blank lines
       if (trimmed.length === 0) continue;
-
-      // Skip metadata lines (lines starting with ** like **ID**, **Priority**, etc.)
       if (/^\*\*[^*]+\*\*:/.test(trimmed)) continue;
-
-      // Found first non-metadata, non-blank line - this is the requirement text
       return trimmed;
     }
-
-    // No requirement text found
     return undefined;
   }
 

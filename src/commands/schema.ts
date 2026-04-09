@@ -1,8 +1,20 @@
-import { Command } from 'commander';
+// commander types removed for zero-dependency
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import ora from 'ora';
-import { stringify as stringifyYaml } from 'yaml';
+// Zero-dependency polyfills
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
+const ora = (msg?: string) => ({
+  start: function() { return this; },
+  succeed: function() { return this; },
+  fail: function(e: any) { if (e) { console.error(e); } return this; },
+  stop: function() { return this; },
+  stopAndPersist: function() { return this; },
+  info: function(msg: string) { if (msg) { console.log(msg); } return this; },
+  warn: function(msg: string) { if (msg) { console.warn(msg); } return this; },
+  text: msg || ''
+}) as any;
+import { parseYaml, stringifyYaml } from '../core/parsers/yaml-parser.js';
 import {
   getSchemaDir,
   getProjectSchemasDir,
@@ -287,7 +299,7 @@ const DEFAULT_ARTIFACTS: Array<{
 /**
  * Register the schema command and all its subcommands.
  */
-export function registerSchemaCommand(program: Command): void {
+export function registerSchemaCommand(program: any): void {
   const schemaCmd = program
     .command('schema')
     .description('Manage workflow schemas [experimental]');
@@ -734,7 +746,7 @@ export function registerSchemaCommand(program: Command): void {
 
         if (isInteractive) {
           // Interactive mode
-          const { input, checkbox, confirm } = await import('@inquirer/prompts');
+          const { input, checkbox, confirm } = await import('../core/prompts.js');
 
           description = await input({
             message: 'Schema description:',
@@ -871,11 +883,10 @@ export function registerSchemaCommand(program: Command): void {
           const configPath = path.join(projectRoot, 'openspec', 'config.yaml');
 
           if (fs.existsSync(configPath)) {
-            const { parse: parseYaml, stringify: stringifyYaml2 } = await import('yaml');
             const configContent = fs.readFileSync(configPath, 'utf-8');
             const config = parseYaml(configContent) || {};
             config.defaultSchema = name;
-            fs.writeFileSync(configPath, stringifyYaml2(config));
+            fs.writeFileSync(configPath, stringifyYaml(config));
           } else {
             // Create config file
             const configDir = path.dirname(configPath);

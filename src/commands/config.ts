@@ -1,4 +1,7 @@
-import { Command } from 'commander';
+// commander types removed for zero-dependency
+// Zero-dependency polyfills
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
 import { spawn, execSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -206,12 +209,12 @@ function maybeWarnConfigDrift(
  *
  * @param program - The Commander program instance
  */
-export function registerConfigCommand(program: Command): void {
+export function registerConfigCommand(program: any): void {
   const configCmd = program
     .command('config')
     .description('View and modify global OpenSpec configuration')
     .option('--scope <scope>', 'Config scope (only "global" supported currently)')
-    .hook('preAction', (thisCommand) => {
+    .hook('preAction', (thisCommand: any) => {
       const opts = thisCommand.opts();
       if (opts.scope && opts.scope !== 'global') {
         console.error('Error: Project-local config is not yet implemented');
@@ -360,7 +363,7 @@ export function registerConfigCommand(program: Command): void {
       }
 
       if (!options.yes) {
-        const { confirm } = await import('@inquirer/prompts');
+        const { confirm } = await import('../core/prompts.js');
         let confirmed: boolean;
         try {
           confirmed = await confirm({
@@ -479,8 +482,7 @@ export function registerConfigCommand(program: Command): void {
       }
 
       // Interactive picker
-      const { select, checkbox, confirm } = await import('@inquirer/prompts');
-      const chalk = (await import('chalk')).default;
+      const { select, checkbox, confirm } = await import('../core/prompts.js');
 
       try {
         const config = getGlobalConfig();
@@ -493,7 +495,7 @@ export function registerConfigCommand(program: Command): void {
         console.log(chalk.dim('  Workflows = which actions are available (propose, explore, apply, etc.)'));
         console.log();
 
-        const action = await select<ProfileAction>({
+        const action = await select({
           message: 'What do you want to configure?',
           choices: [
             {
@@ -555,11 +557,11 @@ export function registerConfigCommand(program: Command): void {
             }
           }
 
-          nextState.delivery = await select<Delivery>({
+          nextState.delivery = (await select({
             message: 'Delivery mode (how workflows are installed):',
             choices: deliveryChoices,
             default: currentState.delivery,
-          });
+          })) as Delivery;
         }
 
         if (action === 'both' || action === 'workflows') {
@@ -577,7 +579,7 @@ export function registerConfigCommand(program: Command): void {
             };
           };
 
-          const selectedWorkflows = await checkbox<string>({
+          const selectedWorkflows = await checkbox({
             message: 'Select workflows to make available:',
             instructions: 'Space to toggle, Enter to confirm',
             pageSize: ALL_WORKFLOWS.length,

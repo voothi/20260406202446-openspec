@@ -1,4 +1,16 @@
-import ora from 'ora';
+// Zero-dependency polyfills
+const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+const chalk = makeChalk();
+const ora = (msg?: string) => ({
+  start: function() { return this; },
+  succeed: function() { return this; },
+  fail: function(e: any) { if (e) { console.error(e); } return this; },
+  stop: function() { return this; },
+  stopAndPersist: function() { return this; },
+  info: function(msg: string) { if (msg) { console.log(msg); } return this; },
+  warn: function(msg: string) { if (msg) { console.warn(msg); } return this; },
+  text: msg || ''
+}) as any;
 import { CompletionFactory } from '../core/completions/factory.js';
 import { COMMAND_REGISTRY } from '../core/completions/command-registry.js';
 import { detectShell, SupportedShell } from '../utils/shell-detection.js';
@@ -212,7 +224,7 @@ export class CompletionCommand {
 
     // Prompt for confirmation unless --yes flag is provided
     if (!skipConfirmation) {
-      const { confirm } = await import('@inquirer/prompts');
+      const { confirm } = await import('../core/prompts.js');
 
       // Get shell-specific config file path
       const configPaths: Record<string, string> = {

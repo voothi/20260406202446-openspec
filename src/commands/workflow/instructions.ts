@@ -5,7 +5,17 @@
  * Includes both artifact instructions and apply instructions.
  */
 
-import ora from 'ora';
+// Zero-dependency ora stub
+const ora = (msg?: string) => ({
+  start: function() { if (msg) console.log(msg); return this; },
+  succeed: function() { return this; },
+  fail: function(e: any) { if (e) { console.error(e); } return this; },
+  stop: function() { return this; },
+  stopAndPersist: function() { return this; },
+  info: function(msg: string) { if (msg) { console.log(msg); } return this; },
+  warn: function(msg: string) { if (msg) { console.warn(msg); } return this; },
+  text: msg || ''
+}) as any;
 import path from 'path';
 import * as fs from 'fs';
 import {
