@@ -16,8 +16,10 @@ const ora = (msg?: string) => ({
   warn: function(msg: string) { if (msg) { console.warn(msg); } return this; },
   text: msg || ''
 }) as any;
-import path from 'path';
-import * as fs from 'fs';
+import path from 'node:path';
+import * as fs from 'node:fs';
+import process from 'node:process';
+import console from 'node:console';
 import {
   loadChangeContext,
   generateInstructions,

@@ -1,5 +1,5 @@
-import { readdirSync, statSync } from 'fs';
-import { join } from 'path';
+import { readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 
 export interface WalkOptions {
   recursive?: boolean;
@@ -26,15 +26,19 @@ export function walk(dir: string, options: WalkOptions = {}): string[] {
                 results.push(...walk(filePath, { recursive, pattern }));
             }
         } else {
-            // Simple glob-to-regex conversion for basic matching
-            const regexPattern = pattern
-                .replace(/\*\*\//g, '(?:.*/)?')
-                .replace(/\*\*/g, '.*')
-                .replace(/\//g, '[\\\\/]+')
-                .replace(/\*/g, '[^\\\\/]*');
-            
-            if (!pattern || new RegExp(regexPattern).test(filePath)) {
+            if (!pattern) {
                 results.push(filePath.replace(/\\/g, '/'));
+            } else {
+                // Simple glob-to-regex conversion for basic matching
+                const regexPattern = pattern
+                    .replace(/\*\*\//g, '(?:.*/)?')
+                    .replace(/\*\*/g, '.*')
+                    .replace(/\//g, '[\\\\/]+')
+                    .replace(/\*/g, '[^\\\\/]*');
+                
+                if (new RegExp(regexPattern).test(filePath)) {
+                    results.push(filePath.replace(/\\/g, '/'));
+                }
             }
         }
     }
