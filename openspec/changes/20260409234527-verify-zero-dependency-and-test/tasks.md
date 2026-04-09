@@ -16,5 +16,5 @@
 
 ## 4. Test Suite Execution
 
-- [ ] 4.1 Run the full test suite using `npm test`.
-- [ ] 4.2 Verify that all tests pass on Windows 11.
+- [x] 4.1 Run the full test suite using `npm test`.
+- [x] 4.2 Verify that all tests pass on Windows 11.
