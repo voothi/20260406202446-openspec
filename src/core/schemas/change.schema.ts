@@ -10,23 +10,42 @@ export const DeltaSchema = {
   operation: 'string',
   description: 'string',
   'requirement?': RequirementSchema,
-  'requirements?': 'array',
+  'requirements?': [RequirementSchema],
   'rename?': {
     from: 'string',
     to: 'string',
   },
 };
 
-export const ChangeSchema = {
-  name: 'string',
-  why: 'string',
-  whatChanges: 'string',
-  deltas: 'array',
-  'metadata?': {
-    version: 'string',
-    format: 'string',
-    'sourcePath?': 'string',
-  },
+import { validate } from '../validate.js';
+import { VALIDATION_MESSAGES } from '../validation/constants.js';
+
+export const ChangeSchema = (val: any) => {
+  const basic = validate(val, {
+    name: 'string',
+    why: 'string',
+    whatChanges: 'string',
+    deltas: [DeltaSchema],
+    'metadata?': {
+      version: 'string',
+      format: 'string',
+      'sourcePath?': 'string',
+    },
+  });
+  if (!basic.success) return basic;
+
+  const errors: string[] = [];
+  if (val.why.length < 50) {
+    errors.push(VALIDATION_MESSAGES.CHANGE_WHY_TOO_SHORT);
+  }
+  if (val.deltas.length === 0) {
+    errors.push(VALIDATION_MESSAGES.CHANGE_NO_DELTAS);
+  }
+  if (val.deltas.length > 10) {
+    errors.push(VALIDATION_MESSAGES.CHANGE_TOO_MANY_DELTAS);
+  }
+
+  return { success: errors.length === 0, errors };
 };
 
 export interface Delta {

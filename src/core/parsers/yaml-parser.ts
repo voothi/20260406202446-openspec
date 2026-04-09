@@ -57,11 +57,22 @@ export function parseYaml(yamlString: string): any {
         continue;
       } else {
         inBlockScalar = false;
+        // Block scalars typically end with a newline
+        let target: any = null;
+        if (lastPushedObj && typeof lastPushedObj === 'object') target = lastPushedObj;
+        else if (currentTopLevelKey && typeof result[currentTopLevelKey] === 'object' && result[currentTopLevelKey] !== null) target = result[currentTopLevelKey];
+        else target = result;
+
+        if (target && typeof target[blockScalarKey!] === 'string' && target[blockScalarKey!].length > 0) {
+            if (!target[blockScalarKey!].endsWith('\n')) {
+                target[blockScalarKey!] += '\n';
+            }
+        }
       }
     }
 
     if (trimmed && !trimmed.includes(':') && !trimmed.startsWith('-')) {
-      continue;
+      throw new Error(`Invalid YAML format at line: ${line}`);
     }
 
     // Array item detection - handle both "- item" and "- key: val"
@@ -169,7 +180,7 @@ export function parseYaml(yamlString: string): any {
       }
 
       if (!value) {
-        result[key] = {};
+        result[key] = null;
         currentTopLevelKey = key;
         currentArrayKey = null;
         lastPushedObj = null; 
@@ -186,6 +197,21 @@ export function parseYaml(yamlString: string): any {
       }
     }
   }
+
+  // Handle trailing block scalar at EOF
+  if (inBlockScalar && blockScalarKey) {
+    let target: any = null;
+    if (lastPushedObj && typeof lastPushedObj === 'object') target = lastPushedObj;
+    else if (currentTopLevelKey && typeof result[currentTopLevelKey] === 'object' && result[currentTopLevelKey] !== null) target = result[currentTopLevelKey];
+    else target = result;
+
+    if (target && typeof target[blockScalarKey!] === 'string' && target[blockScalarKey!].length > 0) {
+      if (!target[blockScalarKey!].endsWith('\n')) {
+        target[blockScalarKey!] += '\n';
+      }
+    }
+  }
+
   return result;
 }
 
@@ -234,7 +260,10 @@ function parseValue(value: string): any {
   if (value.toLowerCase() === 'true') return true;
   if (value.toLowerCase() === 'false') return false;
   if (!isNaN(Number(value)) && value !== '') return Number(value);
-  if (typeof value === 'string' && value.startsWith('[') && value.endsWith(']')) {
+  if (typeof value === 'string' && value.startsWith('[')) {
+    if (!value.endsWith(']')) {
+      throw new Error(`Malformed YAML array: ${value}`);
+    }
     const inner = value.slice(1, -1).trim();
     if (!inner) return [];
     return inner.split(',').map(s => s.trim().replace(/^["']|["']$/g, ''));

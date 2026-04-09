@@ -37,11 +37,11 @@ export const ArtifactSchema = {
   description: 'string',
   template: 'string',
   'instruction?': 'string',
-  'requires?': 'array',
+  'requires?': ['string'],
 };
 
 export const ApplyPhaseSchema = {
-  requires: 'array',
+  requires: ['string'],
   'tracks?': 'string',
   'instruction?': 'string',
 };
@@ -50,13 +50,13 @@ export const SchemaYamlSchema = {
   name: 'string',
   version: 'number',
   'description?': 'string',
-  artifacts: 'array',
+  artifacts: [ArtifactSchema],
   'apply?': ApplyPhaseSchema,
 };
 
 export const ChangeMetadataSchema = {
-  schema: 'string',
-  'created?': 'string',
+  schema: 'regex:^.+$',
+  'created?': 'regex:^\\d{4}-\\d{2}-\\d{2}$',
 };
 
 // Runtime state types (internal only)

@@ -27,7 +27,13 @@ export function walk(dir: string, options: WalkOptions = {}): string[] {
             }
         } else {
             // Simple glob-to-regex conversion for basic matching
-            if (!pattern || new RegExp(pattern.replace(/\*/g, '.*').replace(/\//g, '[\\\\/]+')).test(filePath)) {
+            const regexPattern = pattern
+                .replace(/\*\*\//g, '(?:.*/)?')
+                .replace(/\*\*/g, '.*')
+                .replace(/\//g, '[\\\\/]+')
+                .replace(/\*/g, '[^\\\\/]*');
+            
+            if (!pattern || new RegExp(regexPattern).test(filePath)) {
                 results.push(filePath.replace(/\\/g, '/'));
             }
         }

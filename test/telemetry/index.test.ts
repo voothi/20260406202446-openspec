@@ -72,48 +72,23 @@ describe('telemetry/index', () => {
       expect(isTelemetryEnabled()).toBe(false);
     });
 
-    it('should return true when no opt-out is set', () => {
+    it('should return false when no opt-out is set (permanently disabled)', () => {
       delete process.env.OPENSPEC_TELEMETRY;
-      delete process.env.DO_NOT_TRACK;
-      delete process.env.CI;
-      expect(isTelemetryEnabled()).toBe(true);
-    });
-
-    it('should prioritize OPENSPEC_TELEMETRY=0 over other settings', () => {
-      process.env.OPENSPEC_TELEMETRY = '0';
       delete process.env.DO_NOT_TRACK;
       delete process.env.CI;
       expect(isTelemetryEnabled()).toBe(false);
     });
   });
 
-  describe('maybeShowTelemetryNotice', () => {
-    it('should not show notice when telemetry is disabled', async () => {
-      process.env.OPENSPEC_TELEMETRY = '0';
-
-      await maybeShowTelemetryNotice();
-
-      expect(consoleLogSpy).not.toHaveBeenCalled();
-    });
-  });
-
   describe('trackCommand', () => {
-    it('should not track when telemetry is disabled', async () => {
-      process.env.OPENSPEC_TELEMETRY = '0';
-
-      await trackCommand('test', '1.0.0');
-
-      expect(PostHog).not.toHaveBeenCalled();
-    });
-
-    it('should track when telemetry is enabled', async () => {
+    it('should not track even when telemetry is not explicitly disabled (permanently disabled)', async () => {
       delete process.env.OPENSPEC_TELEMETRY;
       delete process.env.DO_NOT_TRACK;
       delete process.env.CI;
 
       await trackCommand('test', '1.0.0');
 
-      expect(PostHog).toHaveBeenCalled();
+      expect(PostHog).not.toHaveBeenCalled();
     });
   });
 

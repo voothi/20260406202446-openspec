@@ -249,24 +249,18 @@ artifacts:
       const schemaDir = path.join(tempDir, 'openspec', 'schemas', 'new-schema');
       fs.mkdirSync(schemaDir, { recursive: true });
 
-      const { stringify: stringifyYaml } = await import('yaml');
+      const schemaYaml = `name: new-schema
+version: 1
+description: A new schema
+artifacts:
+  - id: proposal
+    generates: proposal.md
+    description: Proposal
+    template: proposal.md
+    requires: []
+`;
 
-      const schema = {
-        name: 'new-schema',
-        version: 1,
-        description: 'A new schema',
-        artifacts: [
-          {
-            id: 'proposal',
-            generates: 'proposal.md',
-            description: 'Proposal',
-            template: 'proposal.md',
-            requires: [],
-          },
-        ],
-      };
-
-      fs.writeFileSync(path.join(schemaDir, 'schema.yaml'), stringifyYaml(schema));
+      fs.writeFileSync(path.join(schemaDir, 'schema.yaml'), schemaYaml);
       fs.writeFileSync(path.join(schemaDir, 'proposal.md'), '# Proposal');
 
       // Verify

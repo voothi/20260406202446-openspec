@@ -5,10 +5,17 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
 
-// Mock @inquirer/prompts
-vi.mock('@inquirer/prompts', () => ({
-  select: vi.fn(),
-  confirm: vi.fn()
+// Mock src/core/prompts.js
+const { confirmMock, selectMock } = vi.hoisted(() => ({
+  confirmMock: vi.fn(),
+  selectMock: vi.fn(),
+}));
+
+vi.mock('../../src/core/prompts.js', () => ({
+  confirm: confirmMock,
+  select: selectMock,
+  checkbox: vi.fn(),
+  input: vi.fn(),
 }));
 
 describe('ArchiveCommand', () => {
@@ -384,8 +391,7 @@ The system will log all events.
     });
 
     it('should proceed with archive when user declines spec updates', async () => {
-      const { confirm } = await import('@inquirer/prompts');
-      const mockConfirm = confirm as unknown as ReturnType<typeof vi.fn>;
+      const mockConfirm = confirmMock;
       
       const changeName = 'decline-specs-feature';
       const changeDir = path.join(tempDir, 'openspec', 'changes', changeName);
@@ -722,8 +728,7 @@ E1 updated`);
 
   describe('interactive mode', () => {
     it('should use select prompt for change selection', async () => {
-      const { select } = await import('@inquirer/prompts');
-      const mockSelect = select as unknown as ReturnType<typeof vi.fn>;
+      const mockSelect = selectMock;
       
       // Create test changes
       const change1 = 'feature-a';
@@ -753,8 +758,7 @@ E1 updated`);
     });
 
     it('should use confirm prompt for task warnings', async () => {
-      const { confirm } = await import('@inquirer/prompts');
-      const mockConfirm = confirm as unknown as ReturnType<typeof vi.fn>;
+      const mockConfirm = confirmMock;
       
       const changeName = 'incomplete-interactive';
       const changeDir = path.join(tempDir, 'openspec', 'changes', changeName);
@@ -778,8 +782,7 @@ E1 updated`);
     });
 
     it('should cancel when user declines task warning', async () => {
-      const { confirm } = await import('@inquirer/prompts');
-      const mockConfirm = confirm as unknown as ReturnType<typeof vi.fn>;
+      const mockConfirm = confirmMock;
       
       const changeName = 'cancel-test';
       const changeDir = path.join(tempDir, 'openspec', 'changes', changeName);

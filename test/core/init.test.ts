@@ -11,16 +11,15 @@ const { confirmMock, showWelcomeScreenMock, searchableMultiSelectMock } = vi.hoi
   searchableMultiSelectMock: vi.fn(),
 }));
 
-vi.mock('@inquirer/prompts', () => ({
+vi.mock('../../src/core/prompts.js', () => ({
   confirm: confirmMock,
+  checkbox: searchableMultiSelectMock,
+  input: vi.fn(),
+  select: vi.fn(),
 }));
 
 vi.mock('../../src/ui/welcome-screen.js', () => ({
   showWelcomeScreen: showWelcomeScreenMock,
-}));
-
-vi.mock('../../src/prompts/searchable-multi-select.js', () => ({
-  searchableMultiSelect: searchableMultiSelectMock,
 }));
 
 describe('InitCommand', () => {

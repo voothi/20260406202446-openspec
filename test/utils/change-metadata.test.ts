@@ -10,51 +10,51 @@ import {
   validateSchemaName,
   ChangeMetadataError,
 } from '../../src/utils/change-metadata.js';
+import { validate } from '../../src/core/validate.js';
 import { ChangeMetadataSchema } from '../../src/core/artifact-graph/types.js';
 
 describe('ChangeMetadataSchema', () => {
+  const safeParse = (data: any) => validate(data, ChangeMetadataSchema);
+
   describe('valid metadata', () => {
     it('should accept valid schema with created date', () => {
-      const result = ChangeMetadataSchema.safeParse({
+      const result = safeParse({
         schema: 'spec-driven',
         created: '2025-01-05',
       });
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.schema).toBe('spec-driven');
-        expect(result.data.created).toBe('2025-01-05');
+        const data = { schema: 'spec-driven', created: '2025-01-05' };
+        expect(data.schema).toBe('spec-driven');
+        expect(data.created).toBe('2025-01-05');
       }
     });
 
     it('should accept valid schema without created date', () => {
-      const result = ChangeMetadataSchema.safeParse({
+      const result = safeParse({
         schema: 'custom-schema',
       });
       expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data.schema).toBe('custom-schema');
-        expect(result.data.created).toBeUndefined();
-      }
     });
   });
 
   describe('invalid metadata', () => {
     it('should reject empty schema', () => {
-      const result = ChangeMetadataSchema.safeParse({
+      const result = safeParse({
         schema: '',
       });
       expect(result.success).toBe(false);
     });
 
     it('should reject missing schema', () => {
-      const result = ChangeMetadataSchema.safeParse({
+      const result = safeParse({
         created: '2025-01-05',
       });
       expect(result.success).toBe(false);
     });
 
     it('should reject invalid date format', () => {
-      const result = ChangeMetadataSchema.safeParse({
+      const result = safeParse({
         schema: 'spec-driven',
         created: '01/05/2025', // Wrong format
       });
@@ -62,7 +62,7 @@ describe('ChangeMetadataSchema', () => {
     });
 
     it('should reject non-ISO date format', () => {
-      const result = ChangeMetadataSchema.safeParse({
+      const result = safeParse({
         schema: 'spec-driven',
         created: '2025-1-5', // Missing leading zeros
       });

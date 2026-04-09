@@ -48,6 +48,22 @@ export class CliRouter {
     return this;
   }
 
+  private _resolveOptionKey(arg: string): string | null {
+    for (const opt of this.options) {
+        const parts = opt.flags.split(',').map(p => p.trim());
+        const short = parts.find(p => p.startsWith('-') && !p.startsWith('--'))?.slice(1);
+        const longMatch = parts.find(p => p.startsWith('--'))?.split(' ')[0].slice(2);
+        
+        const cleanArg = arg.startsWith('--') ? arg.slice(2) : arg.slice(1);
+        if (arg.startsWith('--')) {
+            if (cleanArg === longMatch || (longMatch && cleanArg.startsWith('no-') && cleanArg.slice(3) === longMatch)) return longMatch;
+        } else {
+            if (cleanArg === short) return longMatch || short || null;
+        }
+    }
+    return null;
+  }
+
   action(fn: (...args: any[]) => void | Promise<void>): this {
     this._action = fn;
     return this;
@@ -68,69 +84,61 @@ export class CliRouter {
   }
 
   async parse(argv: string[] = process.argv.slice(2)): Promise<void> {
-    if (argv.length === 0 && !this._action && this._commands.size === 0) {
-      this.showHelp();
-      return;
-    }
-
-    const commandName = argv[0];
-    
-    if (commandName === '--help' || commandName === '-h') {
-        this.showHelp();
-        return;
-    }
-    
-    if (commandName === '--version' || commandName === '-v') {
-        console.log(this.versionStr);
-        return;
-    }
-
-    const cmd = this._commands.get(commandName);
-
-    if (cmd) {
-      return cmd.parse(argv.slice(1));
-    }
-
-    const args: string[] = [];
     const options: any = Object.create(null);
-
+    const positional: string[] = [];
+    
+    // First pass: extract all options and find the command
+    let commandIdx = -1;
     for (let i = 0; i < argv.length; i++) {
         const arg = argv[i];
-        if (arg.startsWith('--')) {
-            const parts = arg.slice(2).split('=');
-            const key = parts[0];
-            if (key === '__proto__' || key === 'constructor') continue;
+        
+        if (!arg.startsWith('-') && this._commands.has(arg)) {
+            // Delegate to subcommand immediately
+            return this._commands.get(arg)!.parse(argv.slice(i + 1));
+        }
+
+        if (arg.startsWith('-')) {
+            if (arg === '--help' || arg === '-h') {
+                this.showHelp();
+                return;
+            }
+            if (arg === '--version' || arg === '-v') {
+                console.log(this.versionStr);
+                return;
+            }
             
-            const camelKey = key.replace(/-([a-z0-9])/gi, g => g[1].toUpperCase());
+            const rawKey = arg.split('=')[0];
+            const resolvedKey = this._resolveOptionKey(rawKey) || (arg.startsWith('--') ? rawKey.slice(2) : rawKey.slice(1));
             
-            if (key.startsWith('no-')) {
+            const camelKey = resolvedKey.replace(/-([a-z0-9])/gi, g => g[1].toUpperCase());
+            
+            if (resolvedKey.startsWith('no-')) {
                 const posKey = camelKey.slice(2).charAt(0).toLowerCase() + camelKey.slice(3);
                 options[posKey] = false;
-            } else if (parts.length > 1) {
-                options[camelKey] = parts.slice(1).join('=');
+            } else if (arg.includes('=')) {
+                options[camelKey] = arg.split('=')[1];
             } else if (i + 1 < argv.length && !argv[i+1].startsWith('-')) {
                 options[camelKey] = argv[++i];
             } else {
                 options[camelKey] = true;
             }
-        } else if (arg.startsWith('-')) {
-            options[arg.slice(1)] = true;
         } else {
-            args.push(arg);
+            positional.push(arg);
         }
     }
 
     if (this._action) {
-       const expectedArgs = this._expectedArgs || 0;
        const actionArgs: any[] = [];
-       for (let i = 0; i < expectedArgs; i++) {
-         actionArgs.push(args[i]);
+       for (let i = 0; i < (this._expectedArgs || 0); i++) {
+         actionArgs.push(positional[i]);
        }
        actionArgs.push(options);
        actionArgs.push(this);
        await this._action(...actionArgs);
     } else if (argv.length > 0 && !this.parent) {
-       console.error(`Unknown command: ${commandName}`);
+       // Only error on root router
+       const firstNonOpt = argv.find(a => !a.startsWith('-'));
+       console.error(`Unknown command: ${firstNonOpt || argv[0]}`);
        process.exit(1);
     } else {
        this.showHelp();

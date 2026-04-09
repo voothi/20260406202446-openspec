@@ -8,10 +8,64 @@ export interface ValidationResult {
 }
 
 export function validate(obj: any, schema: any): ValidationResult {
-  const errors: string[] = [];
+  // Handle null/undefined values to validate against
+  if (obj === null || obj === undefined) {
+    return { success: false, errors: ['Value is null or undefined'] };
+  }
 
+  // Handle function schemas (custom validation logic)
+  if (typeof schema === 'function') {
+    return schema(obj);
+  }
+
+  // Handle primitive schemas (strings, numbers, etc.)
+  if (typeof schema === 'string') {
+    if (schema.startsWith('regex:')) {
+      const pattern = schema.slice(6);
+      if (typeof obj !== 'string' || !new RegExp(pattern).test(obj)) {
+        return { success: false, errors: [`must match regex ${pattern}`] };
+      }
+      return { success: true, errors: [] };
+    }
+    if (schema === 'string' && typeof obj !== 'string') return { success: false, errors: ['must be a string'] };
+    if (schema === 'number' && typeof obj !== 'number') return { success: false, errors: ['must be a number'] };
+    if (schema === 'boolean' && typeof obj !== 'boolean') return { success: false, errors: ['must be a boolean'] };
+    if (schema === 'array' && !Array.isArray(obj)) return { success: false, errors: ['must be an array'] };
+    return { success: true, errors: [] };
+  }
+
+  // Handle array schemas [itemSchema]
+  if (Array.isArray(schema)) {
+    if (!Array.isArray(obj)) return { success: false, errors: ['must be an array'] };
+    const errors: string[] = [];
+    if (schema.length > 0) {
+      const itemSchema = schema[0];
+      for (let i = 0; i < obj.length; i++) {
+        const itemResult = validate(obj[i], itemSchema);
+        if (!itemResult.success) {
+          errors.push(...itemResult.errors.map(e => `[${i}].${e}`));
+        }
+      }
+    }
+    return { success: errors.length === 0, errors };
+  }
+
+  // Handle object schemas
+  const errors: string[] = [];
   if (!obj || typeof obj !== 'object') {
-    return { success: false, errors: ['Input is not an object'] };
+    return { success: false, errors: ['is not an object'] };
+  }
+
+  // Handle wildcard object schemas { '*': type }
+  if (schema['*']) {
+    const itemType = schema['*'];
+    for (const [key, val] of Object.entries(obj)) {
+      const subResult = validate(val, itemType);
+      if (!subResult.success) {
+        errors.push(...subResult.errors.map(e => `${key}${e.startsWith('[') ? '' : '.'}${e}`));
+      }
+    }
+    return { success: errors.length === 0, errors };
   }
 
   for (const [key, type] of Object.entries(schema)) {
@@ -26,19 +80,9 @@ export function validate(obj: any, schema: any): ValidationResult {
       continue;
     }
 
-    if (type === 'string' && typeof actualValue !== 'string') {
-      errors.push(`Field ${actualKey} must be a string`);
-    } else if (type === 'number' && typeof actualValue !== 'number') {
-      errors.push(`Field ${actualKey} must be a number`);
-    } else if (type === 'boolean' && typeof actualValue !== 'boolean') {
-      errors.push(`Field ${actualKey} must be a boolean`);
-    } else if (type === 'array' && !Array.isArray(actualValue)) {
-      errors.push(`Field ${actualKey} must be an array`);
-    } else if (typeof type === 'object' && !Array.isArray(type)) {
-      const subResult = validate(actualValue, type);
-      if (!subResult.success) {
-        errors.push(...subResult.errors.map(e => `${actualKey}.${e}`));
-      }
+    const subResult = validate(actualValue, type);
+    if (!subResult.success) {
+      errors.push(...subResult.errors.map(e => `${actualKey}${e.startsWith('[') ? '' : '.'}${e}`));
     }
   }
 

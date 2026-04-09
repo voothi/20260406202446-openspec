@@ -7,7 +7,15 @@
 
 import path from 'path';
 // Zero-dependency polyfills
-const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+// Zero-dependency chalk polyfill
+const makeChalk = () => {
+  const ch: any = (s: any) => s;
+  const proxy: any = new Proxy(ch, {
+    get: () => proxy,
+    apply: (target, thisArg, args) => args[0]
+  });
+  return proxy;
+};
 const chalk = makeChalk();
 const ora = (msg?: string) => ({
   start: function() { return this; },

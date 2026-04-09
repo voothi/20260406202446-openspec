@@ -257,8 +257,7 @@ rules:
 
         expect(config).toBeNull();
         expect(consoleWarnSpy).toHaveBeenCalledWith(
-          expect.stringContaining('Failed to parse openspec/config.yaml'),
-          expect.anything()
+          expect.stringContaining('openspec/config.yaml is not a valid YAML object')
         );
       });
 

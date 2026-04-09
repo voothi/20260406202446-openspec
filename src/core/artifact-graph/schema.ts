@@ -34,6 +34,22 @@ export function parseSchema(yamlContent: string): SchemaYaml {
   // Schema is now typed as SchemaYaml because validate ensures structure
   const schema = parsed as SchemaYaml;
 
+  // Extra validation required by tests
+  if (schema.version <= 0) {
+    throw new SchemaValidationError('Invalid schema: version must be a positive number');
+  }
+
+  if (!schema.artifacts || schema.artifacts.length === 0) {
+    throw new SchemaValidationError('Invalid schema: artifacts array must not be empty');
+  }
+
+  // Fill in defaults
+  for (const artifact of schema.artifacts) {
+    if (!artifact.requires) {
+      artifact.requires = [];
+    }
+  }
+
   // Check for duplicate artifact IDs
   validateNoDuplicateIds(schema.artifacts);
 

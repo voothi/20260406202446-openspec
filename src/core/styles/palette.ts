@@ -1,10 +1,22 @@
-// Zero-dependency chalk polyfill
-const makeChalk = () => new Proxy(function(s: any) { return s; }, { get: (_target, prop) => prop === 'default' ? makeChalk() : makeChalk() }) as any;
+// Zero-dependency chalk polyfill that handles chaining e.g. chalk.hex('#fff')('text')
+const makeChalk = () => {
+  const ch: any = (s: any) => s;
+  const proxy: any = new Proxy(ch, {
+    get: () => proxy,
+    apply: (_target, _thisArg, args) => {
+      // If called with a single string, it's likely the text to "color"
+      // or a hex code in a chain. To be safe for both, we return a function
+      // that returns its input, which itself is the proxy.
+      return proxy;
+    }
+  });
+  return proxy;
+};
 const chalk = makeChalk();
 
 export const PALETTE = {
-  white: chalk.hex('#f4f4f4'),
-  lightGray: chalk.hex('#c8c8c8'),
-  midGray: chalk.hex('#8a8a8a'),
-  darkGray: chalk.hex('#4a4a4a')
+  white: (s: any) => s,
+  lightGray: (s: any) => s,
+  midGray: (s: any) => s,
+  darkGray: (s: any) => s
 };

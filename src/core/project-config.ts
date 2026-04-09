@@ -69,6 +69,9 @@ export function readProjectConfig(projectRoot: string): ProjectConfig | null {
       for (const [artifactId, rules] of Object.entries(raw.rules)) {
         if (Array.isArray(rules)) {
           const validRules = rules.filter(r => typeof r === 'string' && r.trim().length > 0);
+          if (validRules.length < rules.length) {
+            console.warn(`Some rules for '${artifactId}' are empty strings and will be ignored`);
+          }
           if (validRules.length > 0) {
             parsedRules[artifactId] = validRules;
             hasValidRules = true;
@@ -87,7 +90,7 @@ export function readProjectConfig(projectRoot: string): ProjectConfig | null {
 
     return Object.keys(config).length > 0 ? (config as ProjectConfig) : null;
   } catch (error) {
-    console.warn(`Failed to parse openspec/config.yaml:`, error);
+    console.warn(`openspec/config.yaml is not a valid YAML object`);
     return null;
   }
 }

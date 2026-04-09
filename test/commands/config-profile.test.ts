@@ -1,20 +1,27 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { Command } from 'commander';
+import { CliRouter as Command } from '../../src/core/cli-router.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 
-vi.mock('@inquirer/prompts', () => ({
-  select: vi.fn(),
-  checkbox: vi.fn(),
-  confirm: vi.fn(),
+const { selectMock, checkboxMock, confirmMock } = vi.hoisted(() => ({
+  selectMock: vi.fn(),
+  checkboxMock: vi.fn(),
+  confirmMock: vi.fn()
+}));
+
+vi.mock('../../src/core/prompts.js', () => ({
+  select: selectMock,
+  checkbox: checkboxMock,
+  confirm: confirmMock,
+  input: vi.fn(),
 }));
 
 async function runConfigCommand(args: string[]): Promise<void> {
   const { registerConfigCommand } = await import('../../src/commands/config.js');
   const program = new Command();
   registerConfigCommand(program);
-  await program.parseAsync(['node', 'openspec', 'config', ...args]);
+  await program.parse(['config', ...args]);
 }
 
 async function getPromptMocks(): Promise<{
@@ -22,11 +29,10 @@ async function getPromptMocks(): Promise<{
   checkbox: ReturnType<typeof vi.fn>;
   confirm: ReturnType<typeof vi.fn>;
 }> {
-  const prompts = await import('@inquirer/prompts');
   return {
-    select: prompts.select as unknown as ReturnType<typeof vi.fn>,
-    checkbox: prompts.checkbox as unknown as ReturnType<typeof vi.fn>,
-    confirm: prompts.confirm as unknown as ReturnType<typeof vi.fn>,
+    select: selectMock,
+    checkbox: checkboxMock,
+    confirm: confirmMock,
   };
 }
 

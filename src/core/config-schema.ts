@@ -14,11 +14,36 @@ export interface GlobalConfigType {
 /**
  * Zero-dependency schema definition for project configuration.
  */
-export const GlobalConfigSchema = {
-  'featureFlags?': 'object',
-  'profile?': 'string',
-  'delivery?': 'string',
+const SchemaDef = {
+  'featureFlags?': { '*': 'boolean' },
+  'profile?': (v: any) =>
+    v === 'core' || v === 'custom'
+      ? { success: true, errors: [] }
+      : { success: false, errors: ['must be core or custom'] },
+  'delivery?': (v: any) =>
+    v === 'both' || v === 'skills' || v === 'commands'
+      ? { success: true, errors: [] }
+      : { success: false, errors: ['must be both, skills, or commands'] },
   'workflows?': 'array',
+};
+
+export const GlobalConfigSchema = {
+  ...SchemaDef,
+  safeParse: (val: any) => validate(val, SchemaDef),
+  parse: (val: any) => {
+    const res = validate(val, SchemaDef);
+    if (!res.success) throw new Error(res.errors.join('; '));
+    // Zod's parse returns the value with defaults applied if specified in schema.
+    // Our validator doesn't support defaults in schema yet, so we apply them here.
+    return {
+      ...DEFAULT_CONFIG,
+      ...val,
+      featureFlags: {
+        ...(DEFAULT_CONFIG.featureFlags || {}),
+        ...(val.featureFlags || {}),
+      },
+    };
+  },
 };
 
 /**
@@ -163,7 +188,7 @@ export function formatValueYaml(value: unknown, indent: number = 0): string {
  * Validate a configuration object against the schema.
  */
 export function validateConfig(config: unknown): { success: boolean; error?: string } {
-  const result = validate(config, GlobalConfigSchema);
+  const result = validate(config, SchemaDef);
   if (result.success) return { success: true };
   return { success: false, error: result.errors.join('; ') };
 }
