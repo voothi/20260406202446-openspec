@@ -65,7 +65,7 @@ Archive a completed change in the experimental workflow.
    mkdir -p openspec/changes/archive
    ```
 
-   Generate target name: `<target-name>` - use `<change-name>` (if it already starts with a ZID) OR `YYYY-MM-DD-<change-name>` (if it does not).
+   Generate target name: `<target-name>` - use `<change-name>` (if it already starts with a ZID) OR `<ZID>-<change-name>` (if it does not, using current timestamp).
 
    **Check if target already exists:**
    - If yes: Fail with error, suggest renaming existing archive or using different date

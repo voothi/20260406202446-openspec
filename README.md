@@ -51,8 +51,8 @@ Using OpenSpec in a team? [Email here](mailto:teams@openspec.dev) for access to 
 ## See it in action
 
 ```text
-You: /opsx:propose add-dark-mode
-AI:  Created openspec/changes/add-dark-mode/
+You: /opsx:propose 20240322174550-add-dark-mode
+AI:  Created openspec/changes/20240322174550-add-dark-mode/
      ✓ proposal.md — why we're doing this, what's changing
      ✓ specs/       — requirements and scenarios
      ✓ design.md    — technical approach
@@ -68,7 +68,7 @@ AI:  Implementing tasks...
      All tasks complete!
 
 You: /opsx:archive
-AI:  Archived to openspec/changes/archive/2025-01-23-add-dark-mode/
+AI:  Archived to openspec/changes/archive/20240322174550-add-dark-mode/
      Specs updated. Ready for the next feature.
 ```
 
@@ -111,10 +111,8 @@ If you want the expanded workflow (`/opsx:new`, `/opsx:continue`, `/opsx:ff`, `/
 
 → **[Getting Started](docs/getting-started.md)**: first steps<br>
 → **[Workflows](docs/workflows.md)**: combos and patterns<br>
-→ **[Commands](docs/commands.md)**: slash commands & skills<br>
-→ **[CLI](docs/cli.md)**: terminal reference<br>
+→ **[Reference](docs/reference.md)**: CLI and command reference<br>
 → **[Supported Tools](docs/supported-tools.md)**: tool integrations & install paths<br>
-→ **[Concepts](docs/concepts.md)**: how it all fits<br>
 → **[Multi-Language](docs/multi-language.md)**: multi-language support<br>
 → **[Customization](docs/customization.md)**: make it yours
 
@@ -124,7 +122,8 @@ If you want the expanded workflow (`/opsx:new`, `/opsx:continue`, `/opsx:ff`, `/
 AI coding assistants are powerful but unpredictable when requirements live only in chat history. OpenSpec adds a lightweight spec layer so you agree on what to build before any code is written.
 
 - **Agree before you build** — human and AI align on specs before code gets written
-- **Stay organized** — each change gets its own folder with proposal, specs, design, and tasks
+- **Zero-Trust Supply Chain** — zero runtime dependencies for maximum security and portability
+- **Stay organized** — each change gets its own folder with ZID-prefixed proposal, specs, design, and tasks
 - **Work fluidly** — update any artifact anytime, no rigid phase gates
 - **Use your tools** — works with 20+ AI assistants via slash commands
 
@@ -181,11 +180,9 @@ When writing proposals, keep the OpenSpec philosophy in mind: we serve a wide va
 <details>
 <summary><strong>Telemetry</strong></summary>
 
-OpenSpec collects anonymous usage stats.
+OpenSpec does **not** collect any usage stats or anonymous telemetry.
 
-We collect only command names and version to understand usage patterns. No arguments, paths, content, or PII. Automatically disabled in CI.
-
-**Opt-out:** `export OPENSPEC_TELEMETRY=0` or `export DO_NOT_TRACK=1`
+Following our zero-dependency and privacy hardening initiative, all analytics collection, external tracking libraries, and user identification mechanisms have been permanently removed from the codebase.
 
 </details>
 

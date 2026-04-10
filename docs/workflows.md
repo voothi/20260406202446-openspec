@@ -1,6 +1,6 @@
 # Workflows
 
-This guide covers common workflow patterns for OpenSpec and when to use each one. For basic setup, see [Getting Started](getting-started.md). For command reference, see [Commands](commands.md).
+This guide covers common workflow patterns for OpenSpec and when to use each one. For basic setup, see [Getting Started](getting-started.md). For command reference, see [Reference](reference.md).
 
 ## Philosophy: Actions, Not Phases
 
@@ -66,9 +66,9 @@ When you know what you want to build and just need to execute:
 **Example conversation:**
 
 ```text
-You: /opsx:new add-logout-button
+You: /opsx:new 20240322174550-add-logout-button
 
-AI:  Created openspec/changes/add-logout-button/
+AI:  Created openspec/changes/20240322174550-add-logout-button/
      Ready to create: proposal
 
 You: /opsx:ff
@@ -127,7 +127,7 @@ AI:  Let me help investigate...
 
 You: Let's tackle the data fetching issue.
 
-You: /opsx:new optimize-product-list-fetching
+You: /opsx:new 20240322174550-optimize-product-list-fetching
 
 AI:  Created change. Ready to create: proposal
 
@@ -163,9 +163,9 @@ Change B: /opsx:new ──► /opsx:ff ──────► /opsx:apply
 ```text
 You: I'm working on add-dark-mode but got pulled into a bug fix
 
-You: /opsx:new fix-login-redirect
+You: /opsx:new 20240322174550-fix-login-redirect
 
-AI:  Created openspec/changes/fix-login-redirect/
+AI:  Created openspec/changes/20240322174550-fix-login-redirect/
 
 You: /opsx:ff
 
@@ -446,6 +446,5 @@ For full command details and options, see [Commands](commands.md).
 
 ## Next Steps
 
-- [Commands](commands.md) - Full command reference with options
-- [Concepts](concepts.md) - Deep dive into specs, artifacts, and schemas
+- [Reference](reference.md) - Full command reference with options
 - [Customization](customization.md) - Create custom workflows

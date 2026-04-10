@@ -96,10 +96,9 @@ When selected by profile/workflow config, OpenSpec generates these skills:
 - `openspec-verify-change`
 - `openspec-onboard`
 
-See [Commands](commands.md) for command behavior and [CLI](cli.md) for `init`/`update` options.
+See [Reference](reference.md) for command behavior and `init`/`update` options.
 
 ## Related
 
-- [CLI Reference](cli.md) — Terminal commands
-- [Commands](commands.md) — Slash commands and skills
+- [Reference Guide](reference.md) — Terminal commands, slash commands, and skills
 - [Getting Started](getting-started.md) — First-time setup

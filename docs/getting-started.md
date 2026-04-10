@@ -123,9 +123,9 @@ Let's walk through adding dark mode to an application.
 ### 1. Start the Change (Default)
 
 ```text
-You: /opsx:propose add-dark-mode
+You: /opsx:propose 20240322174550-add-dark-mode
 
-AI:  Created openspec/changes/add-dark-mode/
+AI:  Created openspec/changes/20240322174550-add-dark-mode/
      ✓ proposal.md — why we're doing this, what's changing
      ✓ specs/       — requirements and scenarios
      ✓ design.md    — technical approach
@@ -219,9 +219,9 @@ During implementation, if you discover the design needs adjustment, just update 
 ```
 You: /opsx:archive
 
-AI:  Archiving add-dark-mode...
+AI:  Archiving 20240322174550-add-dark-mode...
      ✓ Merged specs into openspec/specs/ui/spec.md
-     ✓ Moved to openspec/changes/archive/2025-01-24-add-dark-mode/
+     ✓ Moved to openspec/changes/archive/20240322174550-add-dark-mode/
      Done! Ready for the next feature.
 ```
 
@@ -248,6 +248,5 @@ openspec view
 ## Next Steps
 
 - [Workflows](workflows.md) - Common patterns and when to use each command
-- [Commands](commands.md) - Full reference for all slash commands
-- [Concepts](concepts.md) - Deeper understanding of specs, changes, and schemas
+- [Reference](reference.md) - Full reference for CLI and slash commands
 - [Customization](customization.md) - Make OpenSpec work your way

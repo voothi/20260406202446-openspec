@@ -4,6 +4,13 @@
 
 - **Node.js 20.19.0 or higher** — Check your version: `node --version`
 
+## Security & Portability
+
+OpenSpec is built with a **Zero-Trust Supply Chain** philosophy. It features a zero-dependency runtime, meaning that once installed, it does not rely on any third-party `node_modules`. This provides several benefits:
+- **Maximum Security**: Eliminated risk from transitive dependency supply-chain attacks.
+- **Portability**: Runs reliably in air-gapped or high-security environments.
+- **Predictability**: No version conflicts with other tools in your environment.
+
 ## Package Managers
 
 ### npm

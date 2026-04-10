@@ -339,4 +339,4 @@ Then edit `schema.yaml` to add:
 
 ## See Also
 
-- [CLI Reference: Schema Commands](cli.md#schema-commands) - Full command documentation
+- [Reference Guide](reference.md) — Terminal commands, slash commands, and skills

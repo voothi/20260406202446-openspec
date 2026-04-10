@@ -24,5 +24,8 @@ Use these commands in chat to trigger specific agent behaviors:
 | `/opsx:explore` | Enter a collaborative thinking space to discuss ideas or debug issues. |
 | `/opsx:propose` | Quickly turn an idea into a structured plan ready for implementation. |
 
+### Standardized Naming
+All changes SHALL be prefixed with a ZID (timestamp) in the format `YYYYMMDDHHMMSS` (e.g., `20240322174550-add-auth`).
+
 ---
 *Note: These capabilities are powered by OpenSpec and the specialized `.agent/` configurations.*
