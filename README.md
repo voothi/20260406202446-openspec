@@ -175,6 +175,29 @@ When writing proposals, keep the OpenSpec philosophy in mind: we serve a wide va
 - Develop CLI locally: `npm run dev` or `npm run dev:cli`
 - Conventional commits (one-line): `type(scope): subject`
 
+### Distribution Mirror & Security
+
+To maintain a secure, "Zero-Dependency" runtime when developing from a local fork, use the **Distribution Mirror** workflow. This isolates runtime artifacts from development dependencies.
+
+1.  **Prepare the Mirror**:
+    ```bash
+    # Rebuilds and copies essential files to ./dist-release/
+    npm run sync:release
+    ```
+
+2.  **Dynamic Switching**:
+    Users can toggle between their stable global OpenSpec and the local fork mirror using a **Switcher Script**. Set the following environment variable in your terminal (or permanently in Windows):
+    ```bash
+    # Windows PowerShell
+    $env:USE_OPENSPEC_FORK = "true"
+    ```
+
+3.  **Global Installation**:
+    To update your global stable installation directly from your fork (for a clean, non-linked install):
+    ```bash
+    npm run sync:global
+    ```
+
 ## Other
 
 <details>
