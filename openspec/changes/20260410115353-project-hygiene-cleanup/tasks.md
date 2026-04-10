@@ -11,9 +11,20 @@
 
 ## 3. Change Management Cleanup
 
-- [ ] 3.1 Archive change `add-qa-smoke-harness` using `openspec archive add-qa-smoke-harness --yes`.
-- [ ] 3.2 Archive change `add-artifact-regeneration-support` using `openspec archive add-artifact-regeneration-support --yes`.
-- [ ] 3.3 Delete change directory `openspec/changes/schema-alias-support`.
+- [ ] 3.1 Archive completed changes:
+    - `simplify-skill-installation`
+    - `graceful-status-no-changes`
+    - `fix-opencode-commands-directory`
+- [ ] 3.2 Archive stagnant in-progress changes:
+    - `unify-template-generation-pipeline`
+    - `add-global-install-scope`
+    - `add-change-stacking-awareness`
+    - `add-tool-command-surface-capabilities`
+- [ ] 3.3 Archive stagnant no-tasks changes:
+    - `add-artifact-regeneration-support`
+    - `add-qa-smoke-harness`
+- [ ] 3.4 Delete empty change stubs:
+    - `schema-alias-support`
 
 ## 4. Verification
 

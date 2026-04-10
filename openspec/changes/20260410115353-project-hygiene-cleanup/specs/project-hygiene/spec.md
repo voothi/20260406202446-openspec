@@ -26,7 +26,7 @@ The system SHALL relocate architectural decision records from the project root t
 The system SHALL maintain a clean list of active changes by archiving or deleting stagnant proposals.
 
 #### Scenario: Archive changes with content
-- **WHEN** a change like `add-qa-smoke-harness` is stagnant but contains a proposal
+- **WHEN** a change is stagnant or completed but contains valuable design history (e.g., `simplify-skill-installation`, `unify-template-generation-pipeline`)
 - **THEN** it SHALL be archived to preserve history
 
 #### Scenario: Delete empty stubs

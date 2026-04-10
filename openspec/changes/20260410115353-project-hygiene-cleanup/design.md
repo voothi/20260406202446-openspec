@@ -17,7 +17,7 @@ The project contains several legacy and environment-specific artifacts that are 
 ## Decisions
 
 - **Relocation of merge plan:** Moving `openspec-parallel-merge-plan.md` to `docs/design/` instead of deleting it, as it contains valuable historical context for future remediation.
-- **Archival vs Deletion:** Changes with proposals (`add-qa-smoke-harness`, `add-artifact-regeneration-support`) will be archived to preserve the ideas. Empty stubs like `schema-alias-support` will be deleted.
+- **Archival vs Deletion:** Completed changes (`simplify-skill-installation`, etc.) and complex research-heavy changes (`unify-template-generation-pipeline`, etc.) will be archived to preserve the ideas and historical design decisions. Empty stubs like `schema-alias-support` will be deleted.
 - **Scratch Cleanup:** The entire contents of `scratch/` will be removed.
 
 ## Risks / Trade-offs

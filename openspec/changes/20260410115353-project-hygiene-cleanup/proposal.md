@@ -8,10 +8,9 @@ The project has accumulated several redundant and environment-specific files tha
 - Delete `error.log` (Leftover crash log).
 - Delete `scratch/` directory contents (Temporary artifacts).
 - Relocate `openspec-parallel-merge-plan.md` to `docs/design/parallel-merge-remediation.md` for historical reference.
-- Clean up stagnant OpenSpec changes:
-    - `add-qa-smoke-harness` (Archive)
-    - `add-artifact-regeneration-support` (Archive)
-    - `schema-alias-support` (Delete)
+- Clean up stagnant or completed OpenSpec changes:
+    - **Archive**: `simplify-skill-installation`, `graceful-status-no-changes`, `fix-opencode-commands-directory`, `unify-template-generation-pipeline`, `add-global-install-scope`, `add-change-stacking-awareness`, `add-tool-command-surface-capabilities`, `add-artifact-regeneration-support`, `add-qa-smoke-harness`.
+    - **Delete**: `schema-alias-support`.
 
 ## Capabilities
 
