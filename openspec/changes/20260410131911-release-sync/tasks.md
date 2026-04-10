@@ -1,8 +1,8 @@
 ## 1. Environment Setup
 
 - [ ] 1.1 Add `/dist-release/` and `/*.tgz` entries to `.gitignore`
-- [ ] 1.2 Set permanent Windows User Variable `USE_OPENSPEC_FORK=true` (via System Properties)
-- [ ] 1.3 Restart IDE and terminal sessions to propagate the new environment variable
+- [x] 1.2 Set permanent Windows User Variable `USE_OPENSPEC_FORK=true` (via System Properties)
+- [x] 1.3 Restart IDE and terminal sessions to propagate the new environment variable
 
 ## 2. Core Implementation
 
