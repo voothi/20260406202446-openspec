@@ -8,14 +8,23 @@
 
 SETLOCAL
 
-:: Configuration
-SET "STABLE_PATH=%~dp0node_modules\@fission-ai\openspec-stable\bin\openspec.js"
-SET "FORK_PATH=U:\voothi\20260406202446-openspec\openspec-fork\bin\openspec.js"
+:: Configuration (With Environment Overrides)
+IF "%OPENSPEC_STABLE_PATH%"=="" (
+    SET "STABLE_PATH=%~dp0node_modules\@fission-ai\openspec-stable\bin\openspec.js"
+) ELSE (
+    SET "STABLE_PATH=%OPENSPEC_STABLE_PATH%"
+)
+
+IF "%OPENSPEC_FORK_PATH%"=="" (
+    SET "FORK_PATH=U:\voothi\20260406202446-openspec\openspec-fork\bin\openspec.js"
+) ELSE (
+    SET "FORK_PATH=%OPENSPEC_FORK_PATH%"
+)
 
 :: Routing Logic
 IF "%USE_OPENSPEC_FORK%"=="true" (
     SET "TARGET=%FORK_PATH%"
-    ECHO [OPENSPEC] Mode: Local Fork (/dist-release)
+    ECHO [OPENSPEC] Mode: Local Fork (Config: %TARGET%)
 ) ELSE (
     SET "TARGET=%STABLE_PATH%"
 )

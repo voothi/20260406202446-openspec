@@ -13,16 +13,21 @@
 #>
 
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
-# 1. Stable version path (requires renaming original folder to openspec-stable)
-$stablePath = "$basedir/node_modules/@fission-ai/openspec-stable/bin/openspec.js"
+# 1. Stable version path (Defaults to openspec-stable in global node_modules)
+$stablePath = $env:OPENSPEC_STABLE_PATH
+if (-not $stablePath) {
+    $stablePath = "$basedir/node_modules/@fission-ai/openspec-stable/bin/openspec.js"
+}
 
-# 2. Local Fork Mirror path
-$forkPath = "U:/voothi/20260406202446-openspec/openspec-fork/bin/openspec.js"
+# 2. Local Fork Mirror path (Defaults to your U: drive path)
+$forkPath = $env:OPENSPEC_FORK_PATH
+if (-not $forkPath) {
+    $forkPath = "U:/voothi/20260406202446-openspec/openspec-fork/bin/openspec.js"
+}
 
 if ($env:USE_OPENSPEC_FORK -eq "true") {
     $target = $forkPath
-    # Optional: Log the switch so you know what version you are running
-    Write-Host "[OPENSPEC] Mode: Local Fork (/dist-release)" -ForegroundColor Yellow
+    Write-Host "[OPENSPEC] Mode: Local Fork (Config: $target)" -ForegroundColor Yellow
 } else {
     $target = $stablePath
 }
