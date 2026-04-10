@@ -10,7 +10,7 @@ SETLOCAL
 
 :: Configuration
 SET "STABLE_PATH=%~dp0node_modules\@fission-ai\openspec-stable\bin\openspec.js"
-SET "FORK_PATH=U:\voothi\20260406202446-openspec\dist-release\bin\openspec.js"
+SET "FORK_PATH=U:\voothi\20260406202446-openspec\openspec-fork\bin\openspec.js"
 
 :: Routing Logic
 IF "%USE_OPENSPEC_FORK%"=="true" (

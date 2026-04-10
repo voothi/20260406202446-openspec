@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
-const RELEASE_DIR = path.join(ROOT, 'dist-release');
+const RELEASE_DIR = path.join(ROOT, 'openspec-fork');
 
 // List of files that form the distribution (based on package.json 'files')
 const FILES_TO_MIRROR = [
@@ -16,7 +16,7 @@ const FILES_TO_MIRROR = [
   'LICENSE'
 ];
 
-console.log('🔄 Mirroring distribution artifacts to ./dist-release');
+console.log('🔄 Mirroring distribution artifacts to ./openspec-fork');
 
 try {
   // 1. Reset the release directory
@@ -45,7 +45,7 @@ try {
     }
   });
 
-  console.log('\n✨ Mirroring complete. Zero-dependency runtime ready in ./dist-release');
+  console.log('\n✨ Mirroring complete. Zero-dependency runtime ready in ./openspec-fork');
 } catch (error) {
   console.error(' ❌ Mirroring failed:', error.message);
   process.exit(1);

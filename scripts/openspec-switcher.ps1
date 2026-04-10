@@ -17,7 +17,7 @@ $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 $stablePath = "$basedir/node_modules/@fission-ai/openspec-stable/bin/openspec.js"
 
 # 2. Local Fork Mirror path
-$forkPath = "U:/voothi/20260406202446-openspec/dist-release/bin/openspec.js"
+$forkPath = "U:/voothi/20260406202446-openspec/openspec-fork/bin/openspec.js"
 
 if ($env:USE_OPENSPEC_FORK -eq "true") {
     $target = $forkPath
