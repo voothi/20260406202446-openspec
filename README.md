@@ -192,6 +192,17 @@ To maintain a secure, "Zero-Dependency" runtime when developing from a local for
     $env:USE_OPENSPEC_FORK = "true"
     ```
 
+3.  **Deploy System Shims**:
+    To automatically install/update your global switcher scripts from the project templates:
+    ```bash
+    npm run sync:shims
+    ```
+    
+    To update everything (build, mirror, and shims) in one go:
+    ```bash
+    npm run sync:all
+    ```
+
 3.  **Global Installation**:
     To update your global stable installation directly from your fork (for a clean, non-linked install):
     ```bash

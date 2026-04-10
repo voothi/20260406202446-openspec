@@ -6,7 +6,7 @@ Developing OpenSpec involves heavy development dependencies (TypeScript, ESLint,
 
 - **Release Mirror Script**: Implement a `scripts/release-sync.js` script that builds the project and mirrors only essential runtime files (`dist`, `bin`, `schemas`, `package.json`) to a local, git-ignored directory (`openspec-fork/`).
 - **Dynamic Switcher**: Provide a PowerShell/CMD wrapper script that allows toggling between the stable global OpenSpec and the local fork mirror via environment variables.
-- **NPM Integration**: Add `npm run sync:release` to automate the build-and-mirror process.
+- **NPM Integration**: Add `npm run sync:release` to automate the build-and-mirror process, and `npm run sync:shims` to automatically deploy system shims to the global npm directory.
 - **Git Hygiene**: Explicitly ignore the `openspec-fork/` directory to prevent accidental inclusion of build artifacts in the source control.
 
 ## Capabilities

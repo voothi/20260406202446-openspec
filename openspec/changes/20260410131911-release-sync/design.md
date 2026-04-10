@@ -20,9 +20,12 @@ We will use a Node.js script (`scripts/release-sync.js`) to selectively copy onl
 - **Rationale**: This ensures the mirror directory exactly matches what would be included in an `npm pack` or `npm publish` operation, without the overhead of creating a `.tgz` file.
 - **Tools**: `fs.cpSync` with `recursive: true`.
 
-### 2. Integration: NPM Script
-A new script `npm run sync:release` will be added.
-- **Rationale**: Standardizes the build-and-mirror workflow for developers. It will chain `npm run build` with the sync script.
+### 2. Integration: NPM Scripts
+A new suite of `sync` commands will be added to `package.json`:
+- `sync:release`: Rebuilds and mirrors files to `openspec-fork/`.
+- `sync:shims`: Automatically deploys the switcher templates (`scripts/openspec.*`) to the global `%APPDATA%\npm\` directory.
+- `sync:all`: Combines both steps for a one-click system update.
+- **Rationale**: Standardizes the developer workflow and eliminates manual file copying errors when updating switcher logic.
 
 ### 3. Dynamic Version Switching (Proxy Script)
 Instead of replacing the global binary, we will implement a "Smart Switcher" script.

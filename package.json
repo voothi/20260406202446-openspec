@@ -49,6 +49,8 @@
     "test:coverage": "vitest --coverage",
     "test:postinstall": "node scripts/postinstall.js",
     "sync:release": "npm run build && node scripts/release-sync.js",
+    "sync:shims": "powershell -Command \"Copy-Item scripts\\openspec.ps1 $env:APPDATA\\npm\\openspec.ps1 -Force; Copy-Item scripts\\openspec.cmd $env:APPDATA\\npm\\openspec.cmd -Force\"",
+    "sync:all": "npm run sync:release && npm run sync:shims",
     "sync:global": "npm run sync:release && npm pack && npm install -g ./fission-ai-openspec-*.tgz",
     "prepare": "npm run build",
     "prepublishOnly": "npm run build",
