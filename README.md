@@ -169,10 +169,10 @@ When writing proposals, keep the OpenSpec philosophy in mind: we serve a wide va
 
 ### Development
 
-- Install dependencies: `pnpm install`
-- Build: `pnpm run build`
-- Test: `pnpm test`
-- Develop CLI locally: `pnpm run dev` or `pnpm run dev:cli`
+- Install dependencies: `npm install`
+- Build: `npm run build`
+- Test: `npm test`
+- Develop CLI locally: `npm run dev` or `npm run dev:cli`
 - Conventional commits (one-line): `type(scope): subject`
 
 ## Other
