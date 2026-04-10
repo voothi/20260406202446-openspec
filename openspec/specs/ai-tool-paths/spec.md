@@ -2,46 +2,40 @@
 
 ## Purpose
 Define AI tool path metadata used to generate OpenSpec skills and commands in tool-specific directories.
-
 ## Requirements
 ### Requirement: AIToolOption skillsDir field
+The `AIToolOption` interface SHALL include scope support metadata in addition to path metadata.
 
-The `AIToolOption` interface SHALL include an optional `skillsDir` field for skill generation path configuration.
+#### Scenario: Scope support metadata present
+- **WHEN** a tool entry is defined in `AI_TOOLS`
+- **THEN** it MAY declare supported install scopes for skills and commands
+- **AND** this metadata SHALL be used for effective scope resolution
 
-#### Scenario: Interface includes skillsDir field
-
-- **WHEN** a tool entry is defined in `AI_TOOLS` that supports skill generation
-- **THEN** it SHALL include a `skillsDir` field specifying the project-local base directory (e.g., `.claude`)
-
-#### Scenario: Skills path follows Agent Skills spec
-
-- **WHEN** generating skills for a tool with `skillsDir: '.claude'`
-- **THEN** skills SHALL be written to `<projectRoot>/<skillsDir>/skills/`
-- **AND** the `/skills` suffix is appended per Agent Skills specification
+#### Scenario: Scope support metadata absent
+- **WHEN** a tool entry in `AI_TOOLS` omits scope support metadata for a surface
+- **THEN** resolver behavior SHALL default that surface to project-only support
+- **AND** effective scope resolution SHALL apply normal preferred/fallback rules against that default
 
 ### Requirement: Path configuration for supported tools
+Path metadata SHALL support both project and global install targets via resolver logic.
 
-The `AI_TOOLS` array SHALL include `skillsDir` for tools that support the Agent Skills specification.
+#### Scenario: Project scope path
+- **WHEN** effective scope is `project` for skills
+- **THEN** `skillsDir` SHALL be treated as a tool-specific container path under project root
+- **AND** managed skill artifacts SHALL be written under `<projectRoot>/<skillsDir>/skills/`
+- **AND** tool definitions SHALL set `skillsDir` accordingly (for example `.openspec` -> `.openspec/skills/`)
 
-#### Scenario: Claude Code paths defined
+#### Scenario: Global scope path
+- **WHEN** effective scope is `global` for a supported tool/surface
+- **THEN** paths SHALL resolve to tool-specific global directories
+- **AND** environment overrides (for example `CODEX_HOME`) SHALL be respected where applicable
 
-- **WHEN** looking up the `claude` tool
-- **THEN** `skillsDir` SHALL be `.claude`
-
-#### Scenario: Cursor paths defined
-
-- **WHEN** looking up the `cursor` tool
-- **THEN** `skillsDir` SHALL be `.cursor`
-
-#### Scenario: Windsurf paths defined
-
-- **WHEN** looking up the `windsurf` tool
-- **THEN** `skillsDir` SHALL be `.windsurf`
-
-#### Scenario: Tools without skillsDir
-
-- **WHEN** a tool has no `skillsDir` defined
-- **THEN** skill generation SHALL error with message indicating the tool is not supported
+#### Scenario: Windows global path resolution for Codex commands
+- **WHEN** effective scope is `global`
+- **AND** tool is Codex
+- **AND** platform is Windows
+- **THEN** command targets SHALL resolve to `%CODEX_HOME%\prompts` when `CODEX_HOME` is set
+- **AND** SHALL otherwise resolve to `%USERPROFILE%\.codex\prompts`
 
 ### Requirement: Cross-platform path handling
 
