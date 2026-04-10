@@ -51,7 +51,7 @@ openspec/
 │       ├── spec.md         # WHAT and WHY
 │       └── design.md       # HOW (optional, for established patterns)
 └── changes/                # Proposed changes
-    ├── [change-name]/      # Descriptive change identifier
+    ├── <ZID>-<name>/       # ZID-prefixed change identifier
     │   ├── proposal.md     # Why, what, and impact
     │   ├── tasks.md        # Implementation checklist
     │   ├── design.md       # Technical decisions (optional)
@@ -59,7 +59,7 @@ openspec/
     │       └── [capability]/
     │           └── spec.md # Clean markdown (no diff syntax)
     └── archive/            # Completed changes
-        └── YYYY-MM-DD-[name]/
+        └── <ZID>-<name>/   # Original change directory name
 ```
 
 ### Requirement: Structured Format for Behavioral Specs
@@ -122,30 +122,11 @@ Requirement headers SHALL serve as unique identifiers for programmatic matching 
 
 ### Requirement: Change Storage Convention
 
-Change proposals SHALL store only the additions, modifications, and removals to specifications, not complete future states.
+Change identifiers MUST be prefixed with a ZID (YYYYMMDDHHMMSS) to ensure uniqueness: `<ZID>-<name>`.
 
-#### Scenario: Creating change proposals with additions
-
-- **WHEN** creating a change proposal that adds new requirements
-- **THEN** include only the new requirements under `## ADDED Requirements`
-- **AND** each requirement SHALL include its complete content
-- **AND** use the standard structured format for requirements and scenarios
-
-#### Scenario: Creating change proposals with modifications  
-
-- **WHEN** creating a change proposal that modifies existing requirements
-- **THEN** include the modified requirements under `## MODIFIED Requirements`
-- **AND** use the same header text as in the current spec (normalized)
-- **AND** include the complete modified requirement (not a diff)
-- **AND** optionally annotate what changed with inline comments like `← (was X)`
-
-#### Scenario: Creating change proposals with removals
-
-- **WHEN** creating a change proposal that removes requirements
-- **THEN** list them under `## REMOVED Requirements`
-- **AND** use the normalized header text for identification
-- **AND** include reason for removal
-- **AND** document any migration path if applicable
+#### Scenario: Creating a new change
+- **WHEN** running `openspec new change "update-docs"`
+- **THEN** the resulting directory SHALL be `openspec/changes/20260410121551-update-docs/` (assuming current time)
 
 The `changes/[name]/specs/` directory SHALL contain:
 - Delta files showing only what changes
@@ -300,7 +281,7 @@ openspec/
 │       ├── spec.md         # WHAT and WHY
 │       └── design.md       # HOW (optional, for established patterns)
 └── changes/                # Proposed changes
-    ├── [change-name]/      # Descriptive change identifier
+    ├── <ZID>-<name>/       # ZID-prefixed change identifier
     │   ├── proposal.md     # Why, what, and impact
     │   ├── tasks.md        # Implementation checklist
     │   ├── design.md       # Technical decisions (optional)
@@ -308,7 +289,7 @@ openspec/
     │       └── [capability]/
     │           └── spec.md # Clean markdown (no diff syntax)
     └── archive/            # Completed changes
-        └── YYYY-MM-DD-[name]/
+        └── <ZID>-<name>/   # Original change directory name
 ```
 
 ## Specification Format
@@ -375,30 +356,11 @@ Requirement headers SHALL serve as unique identifiers for programmatic matching 
 
 ### Requirement: Change Storage Convention
 
-Change proposals SHALL store only the additions, modifications, and removals to specifications, not complete future states.
+Change identifiers MUST be prefixed with a ZID (YYYYMMDDHHMMSS) to ensure uniqueness: `<ZID>-<name>`.
 
-#### Scenario: Creating change proposals with additions
-
-- **WHEN** creating a change proposal that adds new requirements
-- **THEN** include only the new requirements under `## ADDED Requirements`
-- **AND** each requirement SHALL include its complete content
-- **AND** use the standard structured format for requirements and scenarios
-
-#### Scenario: Creating change proposals with modifications  
-
-- **WHEN** creating a change proposal that modifies existing requirements
-- **THEN** include the modified requirements under `## MODIFIED Requirements`
-- **AND** use the same header text as in the current spec (normalized)
-- **AND** include the complete modified requirement (not a diff)
-- **AND** optionally annotate what changed with inline comments like `← (was X)`
-
-#### Scenario: Creating change proposals with removals
-
-- **WHEN** creating a change proposal that removes requirements
-- **THEN** list them under `## REMOVED Requirements`
-- **AND** use the normalized header text for identification
-- **AND** include reason for removal
-- **AND** document any migration path if applicable
+#### Scenario: Creating a new change
+- **WHEN** running `openspec new change "update-docs"`
+- **THEN** the resulting directory SHALL be `openspec/changes/20260410121551-update-docs/` (assuming current time)
 
 The `changes/[name]/specs/` directory SHALL contain:
 - Delta files showing only what changes
@@ -468,7 +430,7 @@ The change process SHALL follow these states:
 4. **Implement**: Follow tasks.md checklist (can span multiple PRs)
 5. **Deploy**: Changes are deployed to production
 6. **Update**: Specs in `specs/` are updated to match deployed reality
-7. **Archive**: Change is moved to `archive/YYYY-MM-DD-[name]/`
+7. **Archive**: Change is moved to `archive/<ZID>-<name>/`
 
 ## Viewing Changes
 
