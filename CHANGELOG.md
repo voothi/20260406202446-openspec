@@ -23,7 +23,9 @@
 
 ### Minor Changes
 
-- [#20260410113428](https://github.com/Fission-AI/OpenSpec/pull/20260410113428) Thanks Antigravity! - ### Project Modernization & Zero-Dependency Architecture
+- [#20260410113428](https://github.com/Fission-AI/OpenSpec/pull/20260410113428) 
+
+### Project Modernization & Zero-Dependency Architecture
 
   **Zero-Dependency Runtime**
   - **Zero-Trust Supply Chain** — The project has transitioned to a zero-dependency runtime architecture, removing all external npm dependencies from the production bundle. This ensures maximum security, portability, and auditability.
