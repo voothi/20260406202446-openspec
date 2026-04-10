@@ -5,7 +5,7 @@ Currently, developers and agents who dogfood OpenSpec from a local fork are ofte
 ## Goals / Non-Goals
 
 **Goals:**
-- Provide a clean, runtime-only directory (`dist-release/`) for execution.
+- Provide a clean, runtime-only directory (`openspec-fork/`) for execution.
 - Automate the mirroring of essential files (`dist`, `bin`, `schemas`, `package.json`).
 - Enable live development via junctions while maintaining isolation.
 
@@ -29,12 +29,12 @@ Instead of replacing the global binary, we will implement a "Smart Switcher" scr
 - **Mechanism**: A `.ps1` or `.cmd` wrapper script placed in the global path that checks for the `USE_OPENSPEC_FORK` environment variable.
 - **Persistence**: For cross-session reliability (especially for AI agents), the variable should be set as a **Permanent Windows User Variable** (via System Properties > Environment Variables).
 - **Logic**: 
-  - If `USE_OPENSPEC_FORK` is `"true"`, it launches the binary from the `dist-release` folder.
+  - If `USE_OPENSPEC_FORK` is `"true"`, it launches the binary from the `openspec-fork` folder.
   - Otherwise, it launches the binary from a "Stable Backup" folder (`openspec-stable`).
 - **Rationale**: This allows agents to use the fixed command name `openspec` while providing the developer with an instant "Toggle" without manual file copying.
 
 ### 4. Git Exclusion
-The `dist-release/` folder will be added to `.gitignore`.
+The `openspec-fork/` folder will be added to `.gitignore`.
 - **Rationale**: Prevents accidental commits of built artifacts and ensures the mirror is ephemeral and local to the developer's machine.
 
 ## Risks / Trade-offs

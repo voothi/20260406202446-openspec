@@ -4,7 +4,7 @@
 The system SHALL support creating a dedicated release mirror directory for clean execution.
 
 #### Scenario: Missing release directory
-- **WHEN** the `sync:release` command is executed and `dist-release/` does not exist
+- **WHEN** the `sync:release` command is executed and `openspec-fork/` does not exist
 - **THEN** the system SHALL create the directory before mirroring files.
 
 ### Requirement: Selective artifact mirroring
@@ -28,7 +28,7 @@ The system SHALL provide a mechanism to switch between stable and fork versions 
 
 #### Scenario: Switching to fork mode
 - **WHEN** the environment variable `USE_OPENSPEC_FORK` is set to `"true"`
-- **THEN** the global `openspec` command SHALL execute the binary from the local `dist-release` directory.
+- **THEN** the global `openspec` command SHALL execute the binary from the local `openspec-fork` directory.
 
 #### Scenario: Falling back to stable mode
 - **WHEN** the environment variable `USE_OPENSPEC_FORK` is NOT set or NOT `"true"`
