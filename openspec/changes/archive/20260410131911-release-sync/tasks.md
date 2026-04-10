@@ -11,6 +11,7 @@
 - [x] 2.2 Add `sync:release` command to `package.json` scripts
 - [x] 2.3 Create commented `openspec` templates (`.ps1` and `.cmd`) in `scripts/`
 - [x] 2.4 Add `sync:shims` and `sync:all` commands for automated global deployment
+- [x] 2.5 Add `--which` flag to switcher shims for path debugging
 
 ## 3. Verification & Testing
 

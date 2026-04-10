@@ -26,6 +26,14 @@ The mirroring system SHALL resolve paths correctly on Windows, macOS, and Linux.
 ### Requirement: Dynamic version switching
 The system SHALL provide a mechanism to switch between stable and fork versions without modifying the global installation path.
 
+### Requirement: Active path identification
+The system SHALL provide a way to identify the currently active binary path without execution.
+
+#### Scenario: Checking the active path
+- **WHEN** the `openspec --which` command is executed
+- **THEN** the system SHALL print the absolute path to the `.js` file that would be executed
+- **AND** SHALL exit without running the tool logic.
+
 #### Scenario: Switching to fork mode
 - **WHEN** the environment variable `USE_OPENSPEC_FORK` is set to `"true"`
 - **THEN** the global `openspec` command SHALL execute the binary from the local `openspec-fork` directory.

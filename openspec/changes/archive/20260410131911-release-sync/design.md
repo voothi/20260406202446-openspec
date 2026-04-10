@@ -30,6 +30,7 @@ A new suite of `sync` commands will be added to `package.json`:
 ### 3. Dynamic Version Switching (Proxy Script)
 Instead of replacing the global binary, we will implement a "Smart Switcher" script.
 - **Mechanism**: A `.ps1` or `.cmd` wrapper script placed in the global path that checks for the `USE_OPENSPEC_FORK` environment variable.
+- **Path Debugging**: Support for a `--which` flag that prints the resolved target path and exits without executing the binary.
 - **Persistence**: For cross-session reliability (especially for AI agents), the variable should be set as a **Permanent Windows User Variable** (via System Properties > Environment Variables).
 - **Logic**: 
   - If `USE_OPENSPEC_FORK` is `"true"`, it launches the binary from the `openspec-fork` folder.
