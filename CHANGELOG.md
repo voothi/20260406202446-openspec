@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Thanks Antigravity! - ### Project Maintenance and Release Synchronization
+### Project Maintenance and Release Synchronization
 
   This release consolidates several project hygiene, documentation, and build synchronization improvements.
 
