@@ -1,5 +1,24 @@
 # @fission-ai/openspec
 
+## 1.4.2
+
+### Patch Changes
+
+- Thanks Antigravity! - ### Project Maintenance and Release Synchronization
+
+  This release consolidates several project hygiene, documentation, and build synchronization improvements.
+
+  **Project Hygiene**
+  - **Cleanup & Organization** — Removed redundant files and legacy implementation artifacts to improve workspace clarity.
+  - **Metadata Synchronization** — Updated project metadata and configuration to match the current zero-dependency architecture.
+
+  **Documentation**
+  - **Update Docs** — Refined documentation and reference guides to reflect recent architectural changes and ZID-based naming standards.
+
+  **Build & Synchronization**
+  - **Synchronize Build** — Aligned the build process and distribution shims to ensure consistency across the development environment and the zero-dependency fork.
+  - **Release Mirroring** — Finalized the release synchronization process to provide a stable, zero-dependency runtime mirror.
+
 ## 1.4.0
 
 ### Minor Changes
