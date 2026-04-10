@@ -24,9 +24,17 @@ IF "%OPENSPEC_FORK_PATH%"=="" (
 :: Routing Logic
 IF "%USE_OPENSPEC_FORK%"=="true" (
     SET "TARGET=%FORK_PATH%"
+    IF "%1"=="--which" (
+        ECHO Fork Target: %TARGET%
+        EXIT /b 0
+    )
     ECHO [OPENSPEC] Mode: Local Fork (Config: %TARGET%)
 ) ELSE (
     SET "TARGET=%STABLE_PATH%"
+    IF "%1"=="--which" (
+        ECHO Stable Target: %TARGET%
+        EXIT /b 0
+    )
 )
 
 :: Fallback Check

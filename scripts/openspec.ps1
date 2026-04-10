@@ -27,9 +27,17 @@ if (-not $forkPath) {
 
 if ($env:USE_OPENSPEC_FORK -eq "true") {
     $target = $forkPath
+    if ($args -contains "--which") {
+        Write-Host "Fork Target: $target" -ForegroundColor Yellow
+        exit 0
+    }
     Write-Host "[OPENSPEC] Mode: Local Fork (Config: $target)" -ForegroundColor Yellow
 } else {
     $target = $stablePath
+    if ($args -contains "--which") {
+        Write-Host "Stable Target: $target"
+        exit 0
+    }
 }
 
 # 3. Fallback verification
