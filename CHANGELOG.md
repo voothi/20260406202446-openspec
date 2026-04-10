@@ -1,5 +1,28 @@
 # @fission-ai/openspec
 
+## 1.4.0
+
+### Minor Changes
+
+- [#20260410113428](https://github.com/Fission-AI/OpenSpec/pull/20260410113428) Thanks Antigravity! - ### Project Modernization & Zero-Dependency Architecture
+
+  **Zero-Dependency Runtime**
+  - **Zero-Trust Supply Chain** — The project has transitioned to a zero-dependency runtime architecture, removing all external npm dependencies from the production bundle. This ensures maximum security, portability, and auditability.
+  - **Hardened Standard Library** — Core parsing and CLI logic now rely exclusively on Node.js built-ins, with custom lightweight implementations for YAML parsing and terminal styling.
+
+  **Documentation Modernization**
+  - **Consolidated Reference Guide** — Replaced fragmented `cli.md`, `commands.md`, and `concepts.md` with a single, comprehensive [Reference Guide](docs/reference.md).
+  - **ZID-Based Naming Standard** — Formalized the mandatory ZID (Zero ID) naming convention (`YYYYMMDDHHMMSS-name`) for all future changes. Updated all documentation examples and agent instructions to reflect this standard.
+  - **Security & Portability Docs** — New sections on high-security installation using the zero-dependency bundle and Node.js 20.19.0+ requirements.
+
+  **Privacy-First Commitment**
+  - **Telemetry Removal** — Permanently removed all anonymous usage tracking and telemetry codebases. The project is now strictly privacy-first by default.
+
+  ### Improvements
+  - **Agent Instructions** — Updated `AGENTS.md` and internal workflows (.agent/workflows/) to enforce ZID naming and respect the zero-dependency constraints.
+  - **Link Remediation** — Fixed all broken internal documentation links in `README.md` and the `docs/` folder.
+
+
 ## 1.2.0
 
 ### Minor Changes
