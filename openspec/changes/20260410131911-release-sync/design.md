@@ -24,7 +24,15 @@ We will use a Node.js script (`scripts/release-sync.js`) to selectively copy onl
 A new script `npm run sync:release` will be added.
 - **Rationale**: Standardizes the build-and-mirror workflow for developers. It will chain `npm run build` with the sync script.
 
-### 3. Git Exclusion
+### 3. Dynamic Version Switching (Proxy Script)
+Instead of replacing the global binary, we will implement a "Smart Switcher" script.
+- **Mechanism**: A `.ps1` or `.cmd` wrapper script placed in the global path that checks for the `USE_OPENSPEC_FORK` environment variable.
+- **Logic**: 
+  - If `USE_OPENSPEC_FORK` is `"true"`, it launches the binary from the `dist-release` folder.
+  - Otherwise, it launches the binary from a "Stable Backup" folder (`openspec-stable`).
+- **Rationale**: This allows agents to use the fixed command name `openspec` while providing the developer with an instant "Toggle" without manual file copying.
+
+### 4. Git Exclusion
 The `dist-release/` folder will be added to `.gitignore`.
 - **Rationale**: Prevents accidental commits of built artifacts and ensures the mirror is ephemeral and local to the developer's machine.
 

@@ -22,3 +22,14 @@ The mirroring system SHALL resolve paths correctly on Windows, macOS, and Linux.
 - **WHEN** mirroring occurs on a Windows 11 environment
 - **THEN** the system SHALL use `path.join()` or `fs.cpSync` to handle backslashes correctly
 - **AND** SHALL NOT produce corrupted paths in the release directory.
+
+### Requirement: Dynamic version switching
+The system SHALL provide a mechanism to switch between stable and fork versions without modifying the global installation path.
+
+#### Scenario: Switching to fork mode
+- **WHEN** the environment variable `USE_OPENSPEC_FORK` is set to `"true"`
+- **THEN** the global `openspec` command SHALL execute the binary from the local `dist-release` directory.
+
+#### Scenario: Falling back to stable mode
+- **WHEN** the environment variable `USE_OPENSPEC_FORK` is NOT set or NOT `"true"`
+- **THEN** the global `openspec` command SHALL execute the binary from the stable installation backup.

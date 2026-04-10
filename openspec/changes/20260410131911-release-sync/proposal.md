@@ -5,7 +5,7 @@ Developing OpenSpec involves heavy development dependencies (TypeScript, ESLint,
 ## What Changes
 
 - **Release Mirror Script**: Implement a `scripts/release-sync.js` script that builds the project and mirrors only essential runtime files (`dist`, `bin`, `schemas`, `package.json`) to a local, git-ignored directory (`dist-release/`).
-- **Dogfooding Workflow**: Update project documentation to recommend linking global `node_modules` to this `dist-release/` folder rather than the project root.
+- **Dynamic Switcher**: Provide a PowerShell/CMD wrapper script that allows toggling between the stable global OpenSpec and the local fork mirror via environment variables.
 - **NPM Integration**: Add `npm run sync:release` to automate the build-and-mirror process.
 - **Git Hygiene**: Explicitly ignore the `dist-release/` directory to prevent accidental inclusion of build artifacts in the source control.
 
@@ -13,6 +13,7 @@ Developing OpenSpec involves heavy development dependencies (TypeScript, ESLint,
 
 ### New Capabilities
 - `release-mirroring`: Automated synchronization and isolation of runtime-only artifacts for clean execution and development.
+- `version-switching`: Dynamic toggling between multiple OpenSpec installations using a single command name.
 
 ### Modified Capabilities
 - `openspec-conventions`: Update conventions to include the release-mirroring workflow as the standard for local development and dogfooding.
