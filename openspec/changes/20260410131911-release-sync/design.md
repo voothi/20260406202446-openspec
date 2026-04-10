@@ -27,6 +27,7 @@ A new script `npm run sync:release` will be added.
 ### 3. Dynamic Version Switching (Proxy Script)
 Instead of replacing the global binary, we will implement a "Smart Switcher" script.
 - **Mechanism**: A `.ps1` or `.cmd` wrapper script placed in the global path that checks for the `USE_OPENSPEC_FORK` environment variable.
+- **Persistence**: For cross-session reliability (especially for AI agents), the variable should be set as a **Permanent Windows User Variable** (via System Properties > Environment Variables).
 - **Logic**: 
   - If `USE_OPENSPEC_FORK` is `"true"`, it launches the binary from the `dist-release` folder.
   - Otherwise, it launches the binary from a "Stable Backup" folder (`openspec-stable`).

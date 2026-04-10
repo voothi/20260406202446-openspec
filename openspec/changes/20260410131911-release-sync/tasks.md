@@ -1,6 +1,7 @@
 ## 1. Environment Setup
 
 - [ ] 1.1 Add `/dist-release/` and `/*.tgz` entries to `.gitignore`
+- [ ] 1.2 Set permanent Windows User Variable `USE_OPENSPEC_FORK=true` (via System Properties)
 
 ## 2. Core Implementation
 
