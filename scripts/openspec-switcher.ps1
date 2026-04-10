@@ -1,12 +1,18 @@
 #!/usr/bin/env pwsh
+<#
+.SYNOPSIS
+    OpenSpec Smart Switcher (PowerShell)
+    
+.DESCRIPTION
+    Intelligently routes 'openspec' calls between a stable global install and a local development mirror.
+    
+.INSTALLATION
+    1. Rename C:\Users\voothi\AppData\Roaming\npm\node_modules\@fission-ai\openspec -> openspec-stable
+    2. Replace C:\Users\voothi\AppData\Roaming\npm\openspec.ps1 with this file.
+    3. Set $env:USE_OPENSPEC_FORK = "true" to switch to local development mode.
+#>
+
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
-
-$exe=""
-if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
-  $exe=".exe"
-}
-
-# --- Dynamic Switcher Logic ---
 # 1. Stable version path (requires renaming original folder to openspec-stable)
 $stablePath = "$basedir/node_modules/@fission-ai/openspec-stable/bin/openspec.js"
 

@@ -7,9 +7,9 @@
 
 ## 2. Core Implementation
 
-- [ ] 2.1 Create the `scripts/release-sync.js` utility script to mirror distribution files
-- [ ] 2.2 Add `sync:release` command to `package.json` scripts
-- [ ] 2.3 Create the `openspec` switcher/proxy script template for global installation
+- [x] 2.1 Create the `scripts/release-sync.js` utility script to mirror distribution files
+- [x] 2.2 Add `sync:release` command to `package.json` scripts
+- [x] 2.3 Create commented `openspec` switcher templates (`.ps1` and `.cmd`) in `scripts/`
 
 ## 3. Verification & Testing
 
