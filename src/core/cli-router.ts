@@ -107,17 +107,26 @@ export class CliRouter {
                 return;
             }
             
+            const isNegated = arg.startsWith('--no-');
             const rawKey = arg.split('=')[0];
             const resolvedKey = this._resolveOptionKey(rawKey) || (arg.startsWith('--') ? rawKey.slice(2) : rawKey.slice(1));
             
             const camelKey = resolvedKey.replace(/-([a-z0-9])/gi, g => g[1].toUpperCase());
             
-            if (resolvedKey.startsWith('no-')) {
-                const posKey = camelKey.slice(2).charAt(0).toLowerCase() + camelKey.slice(3);
-                options[posKey] = false;
+            if (isNegated) {
+                // If it was --no-telemetry, resolvedKey might be 'telemetry' or 'no-telemetry'
+                // We want to set the base property to false
+                const targetKey = camelKey.startsWith('no') ? camelKey.slice(2).charAt(0).toLowerCase() + camelKey.slice(3) : camelKey;
+                options[targetKey] = false;
             } else if (arg.includes('=')) {
                 options[camelKey] = arg.split('=')[1];
             } else if (i + 1 < argv.length && !argv[i+1].startsWith('-')) {
+                /**
+                 * Greedy option value resolution:
+                 * Consumes the next token as a value if it doesn't start with '-'.
+                 * Limitation: This can misparse positional arguments as option values
+                 * if they are placed immediately after a flag that expects a value.
+                 */
                 options[camelKey] = argv[++i];
             } else {
                 options[camelKey] = true;

@@ -1,6 +1,15 @@
 /**
  * Zero-dependency schema validator.
  * Replaces 'zod' for simple object structure validation.
+ * 
+ * Supported Schema DSL:
+ * - 'string', 'number', 'boolean', 'array': Primitive type checks
+ * - 'regex:<pattern>': String must match the provided regex pattern
+ * - [itemSchema]: Array where every item matches itemSchema
+ * - { key: schema }: Object with required key matching schema
+ * - { 'key?': schema }: Object with optional key matching schema
+ * - { '*': schema }: Wildcard object where every value matches schema
+ * - (val) => ValidationResult: Custom function validator
  */
 export interface ValidationResult {
   success: boolean;

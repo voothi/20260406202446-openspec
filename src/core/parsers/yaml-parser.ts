@@ -1,3 +1,21 @@
+/**
+ * Zero-dependency YAML parser and stringifier.
+ * 
+ * Supported subset:
+ * - Simple key-value pairs (`key: value`)
+ * - Nested objects (indented)
+ * - Arrays of scalars (`- item`)
+ * - Arrays of single-key objects (`- key: value`)
+ * - Block scalars (`key: |`) with preservation of internal line breaks
+ * - JSON-style arrays on a single line (`key: [a, b, c]`)
+ * 
+ * Excluded (NOT supported):
+ * - Folded scalars (`key: >`)
+ * - Multiple YAML documents in one file (`---`)
+ * - YAML anchors and aliases (`&`, `*`)
+ * - Inline block objects within lists (`- { k: v }`)
+ * - Complex multi-line indented strings without block scalar header
+ */
 export function parseYaml(yamlString: string): any {
   if (!yamlString || typeof yamlString !== 'string') {
     return {};

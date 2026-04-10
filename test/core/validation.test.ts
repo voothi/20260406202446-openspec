@@ -35,6 +35,9 @@ describe('Validation Schemas', () => {
       
       const result = safeParse(ScenarioSchema, scenario);
       expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Scenario text cannot be empty');
+      }
     });
   });
 
@@ -65,6 +68,9 @@ describe('Validation Schemas', () => {
       
       const result = safeParse(RequirementSchema, requirement);
       expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Requirement must contain SHALL or MUST keyword');
+      }
     });
 
     it('should reject requirement without scenarios', () => {
@@ -75,6 +81,9 @@ describe('Validation Schemas', () => {
       
       const result = safeParse(RequirementSchema, requirement);
       expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Requirement must have at least one scenario');
+      }
     });
   });
 
@@ -108,6 +117,9 @@ describe('Validation Schemas', () => {
       
       const result = safeParse(SpecSchema, spec);
       expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Spec must have at least one requirement');
+      }
     });
   });
 
@@ -146,6 +158,9 @@ describe('Validation Schemas', () => {
       
       const result = safeParse(ChangeSchema, change);
       expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Why section must be at least 50 characters');
+      }
     });
 
     it('should warn about too many deltas', () => {
@@ -164,6 +179,42 @@ describe('Validation Schemas', () => {
       
       const result = safeParse(ChangeSchema, change);
       expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Consider splitting changes with more than 10 deltas');
+      }
+    });
+
+    it('should reject when why section length is exactly MIN_WHY_SECTION_LENGTH - 1', () => {
+      const change = {
+        name: 'test-exact-why',
+        why: 'a'.repeat(49),
+        whatChanges: 'test',
+        deltas: [{ spec: 'test', operation: 'ADDED' as const, description: 'test' }]
+      };
+      const result = safeParse(ChangeSchema, change);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Why section must be at least 50 characters');
+      }
+    });
+
+    it('should reject when deltas length is exactly MAX_DELTAS_PER_CHANGE + 1', () => {
+      const deltas = Array.from({ length: 11 }, (_, i) => ({
+        spec: `spec-${i}`,
+        operation: 'ADDED' as const,
+        description: `Add spec ${i}`,
+      }));
+      const change = {
+        name: 'test-exact-deltas',
+        why: 'a'.repeat(50),
+        whatChanges: 'test',
+        deltas
+      };
+      const result = safeParse(ChangeSchema, change);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Consider splitting changes with more than 10 deltas');
+      }
     });
   });
 });
