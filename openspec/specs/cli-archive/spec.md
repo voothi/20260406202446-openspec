@@ -52,7 +52,7 @@ The archive operation SHALL follow a structured process to safely move changes t
 - **WHEN** archiving a change
 - **THEN** execute these steps:
   1. Create archive/ directory if it doesn't exist
-  2. Generate target name as `YYYY-MM-DD-[change-name]` using current date
+  2. Generate target name as `[change-name]` (if it already starts with a 14-digit ZID) OR `YYYY-MM-DD-[change-name]` (if it does not), using current date for the prefix.
   3. Check if target directory already exists
   4. Update main specs from the change's future state specs (see Spec Update Process below)
   5. Move the entire change directory to the archive location
@@ -193,18 +193,30 @@ The archive command SHALL validate changes before applying them to ensure data i
 - **AND** only proceed if validation passes
 - **AND** show validation errors if it fails
 
-#### Scenario: Force archive without validation
-
 - **WHEN** executing `openspec archive change-name --no-validate`
 - **THEN** skip validation (unsafe mode)
 - **AND** show warning about skipping validation
+
+### Requirement: ZID Preservation
+
+The archiver SHALL detect if a change directory name starts with a 14-digit timestamp (ZID). If so, it SHALL NOT add an additional date prefix during archival.
+
+#### Scenario: Archiving change with ZID
+
+- **WHEN** archiving a change named `20260412131945-smooth-nav-repeat`
+- **THEN** the archive directory target SHALL be `openspec/changes/archive/20260412131945-smooth-nav-repeat/`
+
+#### Scenario: Archiving change without ZID
+
+- **WHEN** archiving a change named `fix-startup-nav-latency` (lacks ZID)
+- **THEN** the archive directory target SHALL be `openspec/changes/archive/YYYY-MM-DD-fix-startup-nav-latency/` (using current date prefix)
 
 ## Why These Decisions
 
 **Interactive selection**: Reduces typing and helps users see available changes
 **Task checking**: Prevents accidental archiving of incomplete work
-**Date prefixing**: Maintains chronological order and prevents naming conflicts
-**No overwrite**: Preserves historical archives and prevents data loss
+**Date prefixing**: Maintains chronological order and prevents naming conflicts.
+**ZID preservation**: Avoids redundant redundancy when changes already have a unique timestamp identifier.
 **Spec updates before archiving**: Specs in the main directory represent current reality; when a change is deployed and archived, its future state specs become the new reality and must replace the main specs
 **Confirmation for spec updates**: Provides visibility into what will change, prevents accidental overwrites, and ensures users understand the impact before specs are modified
 **--yes flag for automation**: Allows CI/CD pipelines to archive without interactive prompts while maintaining safety by default for manual use
