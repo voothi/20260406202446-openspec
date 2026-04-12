@@ -86,10 +86,11 @@ export function parseYaml(yamlString: string): any {
                 target[blockScalarKey!] += '\n';
             }
         }
-      }
+        }
+      if (!inBlockScalar && (trimmed === '' || trimmed.startsWith('#'))) continue;
     }
 
-    if (trimmed && !trimmed.includes(':') && !trimmed.startsWith('-')) {
+    if (trimmed && !trimmed.includes(':') && !trimmed.startsWith('-') && !trimmed.startsWith('#')) {
       throw new Error(`Invalid YAML format at line: ${line}`);
     }
 

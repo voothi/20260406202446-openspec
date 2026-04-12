@@ -35,7 +35,7 @@ export function readProjectConfig(projectRoot: string): ProjectConfig | null {
     const raw = parseYaml(content);
 
     if (!raw || typeof raw !== 'object') {
-      console.warn(`openspec/config.yaml is not a valid YAML object`);
+      console.warn(`openspec/config.yaml must be a YAML object (e.g. key: value)`);
       return null;
     }
 
@@ -89,8 +89,8 @@ export function readProjectConfig(projectRoot: string): ProjectConfig | null {
     }
 
     return Object.keys(config).length > 0 ? (config as ProjectConfig) : null;
-  } catch (error) {
-    console.warn(`openspec/config.yaml is not a valid YAML object`);
+  } catch (error: any) {
+    console.warn(`openspec/config.yaml is not a valid YAML object: ${error.message}`);
     return null;
   }
 }

@@ -257,7 +257,7 @@ rules:
 
         expect(config).toBeNull();
         expect(consoleWarnSpy).toHaveBeenCalledWith(
-          expect.stringContaining('openspec/config.yaml is not a valid YAML object')
+          expect.stringContaining('openspec/config.yaml is not a valid YAML object:')
         );
       });
 
@@ -270,7 +270,7 @@ rules:
 
         expect(config).toBeNull();
         expect(consoleWarnSpy).toHaveBeenCalledWith(
-          expect.stringContaining('not a valid YAML object')
+          expect.stringContaining('is not a valid YAML object:')
         );
       });
 
@@ -477,6 +477,89 @@ rules:
           'Reference @mentions and #channels',
           'Follow {variable} naming',
         ]);
+      });
+    });
+  });
+
+  describe('readProjectConfig - Parser Hardening', () => {
+
+    describe('YAML parser hardening (regression tests)', () => {
+      it('should correctly handle block scalar followed by a comment', () => {
+        const configDir = path.join(tempDir, 'openspec');
+        fs.mkdirSync(configDir, { recursive: true });
+        fs.writeFileSync(
+          path.join(configDir, 'config.yaml'),
+          `schema: spec-driven
+context: |
+  Line 1
+  Line 2
+# This comment should not break the parser
+rules:
+  proposal:
+    - rule 1
+`
+        );
+
+        const config = readProjectConfig(tempDir);
+
+        expect(config).toEqual({
+          schema: 'spec-driven',
+          context: 'Line 1\nLine 2\n',
+          rules: {
+            proposal: ['rule 1'],
+          },
+        });
+        expect(consoleWarnSpy).not.toHaveBeenCalled();
+      });
+
+      it('should handle block scalar followed by a comment containing a colon', () => {
+        const configDir = path.join(tempDir, 'openspec');
+        fs.mkdirSync(configDir, { recursive: true });
+        fs.writeFileSync(
+          path.join(configDir, 'config.yaml'),
+          `schema: spec-driven
+context: |
+  Project info
+# Note: this is a comment with a colon
+rules:
+  specs:
+    - rule 2
+`
+        );
+
+        const config = readProjectConfig(tempDir);
+
+        expect(config).toEqual({
+          schema: 'spec-driven',
+          context: 'Project info\n',
+          rules: {
+            specs: ['rule 2'],
+          },
+        });
+        expect(consoleWarnSpy).not.toHaveBeenCalled();
+      });
+
+      it('should handle block scalar followed by multiple empty lines and then a comment', () => {
+        const configDir = path.join(tempDir, 'openspec');
+        fs.mkdirSync(configDir, { recursive: true });
+        fs.writeFileSync(
+          path.join(configDir, 'config.yaml'),
+          `schema: spec-driven
+context: |
+  Project info
+
+
+# Final comment
+`
+        );
+
+        const config = readProjectConfig(tempDir);
+
+        expect(config).toEqual({
+          schema: 'spec-driven',
+          context: 'Project info\n\n',
+        });
+        expect(consoleWarnSpy).not.toHaveBeenCalled();
       });
     });
   });
