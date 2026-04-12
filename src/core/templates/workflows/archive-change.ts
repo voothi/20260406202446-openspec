@@ -80,7 +80,7 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
    - If no: Move the change directory to archive
 
    \`\`\`bash
-   mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>
+   mv openspec/changes/<name> openspec/changes/archive/<target-name>
    \`\`\`
 
 6. **Display summary**
@@ -112,7 +112,8 @@ All artifacts complete. All tasks complete.
 - Preserve .openspec.yaml when moving to archive (it moves with the directory)
 - Show clear summary of what happened
 - If sync is requested, use openspec-sync-specs approach (agent-driven)
-- If delta specs exist, always run the sync assessment and show the combined summary before prompting`,
+- If delta specs exist, always run the sync assessment and show the combined summary before prompting
+- **Cross-platform safety**: When running on Windows, use \`;\` as a command separator or run commands as separate steps (avoid \`&&\`).`,
     license: 'MIT',
     compatibility: 'Requires openspec CLI.',
     metadata: { author: 'openspec', version: '1.0' },
@@ -195,7 +196,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
    - If no: Move the change directory to archive
 
    \`\`\`bash
-   mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>
+   mv openspec/changes/<name> openspec/changes/archive/<target-name>
    \`\`\`
 
 6. **Display summary**
@@ -274,6 +275,7 @@ Target archive directory already exists.
 - Preserve .openspec.yaml when moving to archive (it moves with the directory)
 - Show clear summary of what happened
 - If sync is requested, use the Skill tool to invoke \`openspec-sync-specs\` (agent-driven)
-- If delta specs exist, always run the sync assessment and show the combined summary before prompting`
+- If delta specs exist, always run the sync assessment and show the combined summary before prompting
+- **Cross-platform safety**: When running on Windows, use \`;\` as a command separator or run commands as separate steps (avoid \`&&\`).`
   };
 }

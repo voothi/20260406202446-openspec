@@ -245,7 +245,8 @@ No active changes found. Create a new change to get started.
 - Track and report all outcomes (success/skip/fail)
 - Preserve .openspec.yaml when moving to archive
 - Archive directory target: <target-name> - use <name> (if it already starts with a 14-digit ZID) OR <ZID>-<name> (if it does not, using current timestamp in YYYY-MM-DD format for the prefix)
-- If archive target exists, fail that change but continue with others`,
+- If archive target exists, fail that change but continue with others
+- **Cross-platform safety**: When running on Windows, use \`;\` as a command separator or run commands as separate steps (avoid \`&&\`).`,
     license: 'MIT',
     compatibility: 'Requires openspec CLI.',
     metadata: { author: 'openspec', version: '1.0' },
@@ -493,6 +494,7 @@ No active changes found. Create a new change to get started.
 - Track and report all outcomes (success/skip/fail)
 - Preserve .openspec.yaml when moving to archive
 - Archive directory target: <target-name> - use <name> (if it already starts with a 14-digit ZID) OR <ZID>-<name> (if it does not, using current timestamp in YYYY-MM-DD format for the prefix)
-- If archive target exists, fail that change but continue with others`
+- If archive target exists, fail that change but continue with others
+- **Cross-platform safety**: When running on Windows, use \`;\` as a command separator or run commands as separate steps (avoid \`&&\`).`,
   };
 }
