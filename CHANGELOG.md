@@ -1,5 +1,14 @@
 # @fission-ai/openspec
 
+## 1.4.6
+
+### Patch Changes
+
+- **YAML Parser Hardening** — Improved robustness against block scalar edge cases in the custom zero-dependency parser. Finalized state transitions and added comprehensive regression tests.
+- **Standardized Archival Naming** — Unified archival logic to intelligently preserve 14-digit ZIDs (timestamps) in directory names. Archives now avoid redundant date prefixes when a ZID is already present.
+- **Cross-Platform Agent Safety** — Formalized terminal operation standards in `AGENTS.md`. Agents now prefer separate command calls and use Windows-compatible separators (`;` instead of `&&`).
+- **Template Synchronization** — Updated all core workflow templates (`archive`, `bulk-archive`, `new`, `onboard`, etc.) to align with ZID preservation and cross-platform safety standards.
+
 ## 1.4.2
 
 ### Patch Changes
