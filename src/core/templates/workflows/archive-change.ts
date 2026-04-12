@@ -73,7 +73,7 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
    mkdir -p openspec/changes/archive
    \`\`\`
 
-   Generate target name using current date: \`YYYY-MM-DD-<change-name>\`
+   Generate target name: <target-name> - use <change-name> (if it already starts with a 14-digit ZID) OR <ZID>-<change-name> (if it does not, using current timestamp in YYYY-MM-DD format for the prefix).
 
    **Check if target already exists:**
    - If yes: Fail with error, suggest renaming existing archive or using different date
@@ -99,7 +99,7 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
 
 **Change:** <change-name>
 **Schema:** <schema-name>
-**Archived to:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**Archived to:** openspec/changes/archive/<target-name>/
 **Specs:** ✓ Synced to main specs (or "No delta specs" or "Sync skipped")
 
 All artifacts complete. All tasks complete.
@@ -188,7 +188,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
    mkdir -p openspec/changes/archive
    \`\`\`
 
-   Generate target name using current date: \`YYYY-MM-DD-<change-name>\`
+   Generate target name: <target-name> - use <change-name> (if it already starts with a 14-digit ZID) OR <ZID>-<change-name> (if it does not, using current timestamp in YYYY-MM-DD format for the prefix).
 
    **Check if target already exists:**
    - If yes: Fail with error, suggest renaming existing archive or using different date
@@ -214,7 +214,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 
 **Change:** <change-name>
 **Schema:** <schema-name>
-**Archived to:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**Archived to:** openspec/changes/archive/<target-name>/
 **Specs:** ✓ Synced to main specs
 
 All artifacts complete. All tasks complete.
@@ -227,7 +227,7 @@ All artifacts complete. All tasks complete.
 
 **Change:** <change-name>
 **Schema:** <schema-name>
-**Archived to:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**Archived to:** openspec/changes/archive/<target-name>/
 **Specs:** No delta specs
 
 All artifacts complete. All tasks complete.
@@ -240,7 +240,7 @@ All artifacts complete. All tasks complete.
 
 **Change:** <change-name>
 **Schema:** <schema-name>
-**Archived to:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**Archived to:** openspec/changes/archive/<target-name>/
 **Specs:** Sync skipped (user chose to skip)
 
 **Warnings:**
@@ -257,7 +257,7 @@ Review the archive if this was not intentional.
 ## Archive Failed
 
 **Change:** <change-name>
-**Target:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**Target:** openspec/changes/archive/<target-name>/
 
 Target archive directory already exists.
 
