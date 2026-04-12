@@ -27,5 +27,11 @@ Use these commands in chat to trigger specific agent behaviors:
 ### Standardized Naming
 All changes SHALL be prefixed with a ZID (timestamp) in the format `YYYYMMDDHHMMSS` (e.g., `20240322174550-add-auth`).
 
+### Cross-Platform Safety
+When executing terminal commands (especially on Windows 11), agents SHALL:
+- Prefer separate command calls over single-line chained commands.
+- Use `;` as a statement separator if chaining is mandatory.
+- Avoid Unix-only operators like `&&` or `||` unless in a confirmed compatible shell.
+
 ---
 *Note: These capabilities are powered by OpenSpec and the specialized `.agent/` configurations.*

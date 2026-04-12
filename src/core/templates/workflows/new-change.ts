@@ -72,7 +72,8 @@ After completing the steps, summarize:
 - Do NOT advance beyond showing the first artifact template
 - If the name is invalid (not kebab-case), ask for a valid name
 - If a change with that name already exists, suggest continuing that change instead
-- Pass --schema if using a non-default workflow`,
+- Pass --schema if using a non-default workflow
+- **Cross-platform safety**: When running on Windows, use \`;\` as a command separator or run commands as separate steps (avoid \`&&\`).`,
     license: 'MIT',
     compatibility: 'Requires openspec CLI.',
     metadata: { author: 'openspec', version: '1.0' },
@@ -146,6 +147,7 @@ After completing the steps, summarize:
 - Do NOT advance beyond showing the first artifact template
 - If the name is invalid (not kebab-case), ask for a valid name
 - If a change with that name already exists, suggest using \`/opsx:continue\` instead
-- Pass --schema if using a non-default workflow`
+- Pass --schema if using a non-default workflow
+- **Cross-platform safety**: When running on Windows, use \`;\` as a command separator or run commands as separate steps (avoid \`&&\`).`
   };
 }
