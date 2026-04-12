@@ -129,7 +129,8 @@ This skill allows you to batch-archive changes, handling spec conflicts intellig
    b. **Perform the archive**:
       \`\`\`bash
       mkdir -p openspec/changes/archive
-      mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>
+      Generate target name: <target-name> - use <name> (if it already starts with a 14-digit ZID) OR <ZID>-<name> (if it does not, using current timestamp in YYYY-MM-DD format for the prefix).
+      mv openspec/changes/<name> openspec/changes/archive/<target-name>
       \`\`\`
 
    c. **Track outcome** for each change:
@@ -145,9 +146,9 @@ This skill allows you to batch-archive changes, handling spec conflicts intellig
    ## Bulk Archive Complete
 
    Archived 3 changes:
-   - schema-management-cli -> archive/2026-01-19-schema-management-cli/
-   - project-config -> archive/2026-01-19-project-config/
-   - add-oauth -> archive/2026-01-19-add-oauth/
+   - <change-1> -> archive/<target-name-1>/
+   - <change-2> -> archive/<target-name-2>/
+   - <change-3> -> archive/<target-name-3>/
 
    Skipped 1 change:
    - add-verify-skill (user chose not to archive incomplete)
@@ -202,8 +203,8 @@ then add-graphql specs (chronological order, newer takes precedence).
 ## Bulk Archive Complete
 
 Archived N changes:
-- <change-1> -> archive/YYYY-MM-DD-<change-1>/
-- <change-2> -> archive/YYYY-MM-DD-<change-2>/
+- <change-1> -> archive/<target-name-1>/
+- <change-2> -> archive/<target-name-2>/
 
 Spec sync summary:
 - N delta specs synced to main specs
@@ -216,7 +217,7 @@ Spec sync summary:
 ## Bulk Archive Complete (partial)
 
 Archived N changes:
-- <change-1> -> archive/YYYY-MM-DD-<change-1>/
+- <change-1> -> archive/<target-name-1>/
 
 Skipped M changes:
 - <change-2> (user chose not to archive incomplete)
@@ -243,7 +244,7 @@ No active changes found. Create a new change to get started.
 - Use single confirmation for entire batch
 - Track and report all outcomes (success/skip/fail)
 - Preserve .openspec.yaml when moving to archive
-- Archive directory target uses current date: YYYY-MM-DD-<name>
+- Archive directory target: <target-name> - use <name> (if it already starts with a 14-digit ZID) OR <ZID>-<name> (if it does not, using current timestamp in YYYY-MM-DD format for the prefix)
 - If archive target exists, fail that change but continue with others`,
     license: 'MIT',
     compatibility: 'Requires openspec CLI.',
@@ -376,7 +377,8 @@ This skill allows you to batch-archive changes, handling spec conflicts intellig
    b. **Perform the archive**:
       \`\`\`bash
       mkdir -p openspec/changes/archive
-      mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>
+      Generate target name: <target-name> - use <name> (if it already starts with a 14-digit ZID) OR <ZID>-<name> (if it does not, using current timestamp in YYYY-MM-DD format for the prefix).
+      mv openspec/changes/<name> openspec/changes/archive/<target-name>
       \`\`\`
 
    c. **Track outcome** for each change:
@@ -392,9 +394,9 @@ This skill allows you to batch-archive changes, handling spec conflicts intellig
    ## Bulk Archive Complete
 
    Archived 3 changes:
-   - schema-management-cli -> archive/2026-01-19-schema-management-cli/
-   - project-config -> archive/2026-01-19-project-config/
-   - add-oauth -> archive/2026-01-19-add-oauth/
+   - <change-1> -> archive/<target-name-1>/
+   - <change-2> -> archive/<target-name-2>/
+   - <change-3> -> archive/<target-name-3>/
 
    Skipped 1 change:
    - add-verify-skill (user chose not to archive incomplete)
@@ -449,8 +451,8 @@ then add-graphql specs (chronological order, newer takes precedence).
 ## Bulk Archive Complete
 
 Archived N changes:
-- <change-1> -> archive/YYYY-MM-DD-<change-1>/
-- <change-2> -> archive/YYYY-MM-DD-<change-2>/
+- <change-1> -> archive/<target-name-1>/
+- <change-2> -> archive/<target-name-2>/
 
 Spec sync summary:
 - N delta specs synced to main specs
@@ -463,7 +465,7 @@ Spec sync summary:
 ## Bulk Archive Complete (partial)
 
 Archived N changes:
-- <change-1> -> archive/YYYY-MM-DD-<change-1>/
+- <change-1> -> archive/<target-name-1>/
 
 Skipped M changes:
 - <change-2> (user chose not to archive incomplete)
@@ -490,7 +492,7 @@ No active changes found. Create a new change to get started.
 - Use single confirmation for entire batch
 - Track and report all outcomes (success/skip/fail)
 - Preserve .openspec.yaml when moving to archive
-- Archive directory target uses current date: YYYY-MM-DD-<name>
+- Archive directory target: <target-name> - use <name> (if it already starts with a 14-digit ZID) OR <ZID>-<name> (if it does not, using current timestamp in YYYY-MM-DD format for the prefix)
 - If archive target exists, fail that change but continue with others`
   };
 }
