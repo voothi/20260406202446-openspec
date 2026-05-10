@@ -5,7 +5,7 @@ Define changes to config loading behavior to handle YAML parser type safety impr
 
 ## MODIFIED Requirements
 
-### Requirement: Config file has invalid YAML syntax
+### Requirement: Gracefully handle config errors without halting
 
 The system SHALL read and parse the project configuration file located at `openspec/config.yaml` relative to the project root. When the YAML parser encounters type-related errors (such as attempting to use the `in` operator on non-object values), the system SHALL log a warning message INCLUDING the specific parsing error details and return null.
 
