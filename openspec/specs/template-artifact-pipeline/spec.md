@@ -1,7 +1,8 @@
 # template-artifact-pipeline Specification
 
 ## Purpose
-TBD - created by archiving change unify-template-generation-pipeline. Update Purpose after archive.
+
+Define a unified artifact generation pipeline using workflow manifests, tool profile registries, and a central sync engine.
 ## Requirements
 ### Requirement: Canonical Workflow Manifest
 

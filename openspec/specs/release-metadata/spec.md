@@ -1,7 +1,8 @@
 # release-metadata Specification
 
 ## Purpose
-TBD - created by archiving change 20260410151747-update-to-v1-4-2. Update Purpose after archive.
+
+Define requirements for project versioning, release metadata management, and synchronization across the codebase.
 ## Requirements
 ### Requirement: Unified Versioning
 The system SHALL maintain a consistent version number across all core project packages.

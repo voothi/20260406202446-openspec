@@ -1,4 +1,12 @@
-## Requirement: Release initialization
+# release-mirroring Specification
+
+## Purpose
+
+Define requirements for the release mirroring system to ensure safe distribution of stable and fork versions.
+
+## Requirements
+
+### Requirement: Release initialization
 The system SHALL support creating a dedicated release mirror directory for clean execution.
 
 #### Scenario: Missing release directory

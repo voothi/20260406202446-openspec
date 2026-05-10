@@ -1,7 +1,8 @@
 # project-hygiene Specification
 
 ## Purpose
-TBD - created by archiving change 20260410115353-project-hygiene-cleanup. Update Purpose after archive.
+
+Establish project hygiene standards and automated cleanup procedures for redundant files and stagnant artifacts.
 ## Requirements
 ### Requirement: Workspace Cleanup
 The system SHALL remove redundant and temporary files from the project root to maintain code quality and developer focus.

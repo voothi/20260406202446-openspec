@@ -1,7 +1,8 @@
 # graceful-status-empty Specification
 
 ## Purpose
-TBD - created by archiving change graceful-status-no-changes. Update Purpose after archive.
+
+Ensure the `status` command handles empty states gracefully when no changes are active.
 ## Requirements
 ### Requirement: Status command exits gracefully when no changes exist
 The `statusCommand` function SHALL check for available changes via `getAvailableChanges` before calling `validateChangeExists`. When no `--change` option is provided and no change directories exist, it SHALL print a friendly informational message and exit with code 0, instead of reaching `validateChangeExists` and propagating a fatal error.

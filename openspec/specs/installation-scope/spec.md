@@ -1,7 +1,8 @@
 # installation-scope Specification
 
 ## Purpose
-TBD - created by archiving change add-global-install-scope. Update Purpose after archive.
+
+Define the installation scope model (`global` vs `project`) for tool artifact installation and management.
 ## Requirements
 ### Requirement: Install scope preference model
 The system SHALL support a user-level install scope preference with values `global` and `project`.

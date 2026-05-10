@@ -1,7 +1,8 @@
 # change-stacking-workflow Specification
 
 ## Purpose
-TBD - created by archiving change add-change-stacking-awareness. Update Purpose after archive.
+
+Define requirements for change stacking awareness, allowing changes to depend on each other and resolve dependencies correctly.
 ## Requirements
 ### Requirement: Stack Metadata Model
 The system SHALL support optional metadata on active changes to express sequencing and decomposition relationships.

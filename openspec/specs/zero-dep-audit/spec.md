@@ -1,6 +1,12 @@
-## ADDED Requirements
+# zero-dep-audit Specification
 
-### Requirement: YAML parser handles only the supported subset
+## Purpose
+
+Define requirements for zero-dependency audits and schema validation conventions.
+
+## Requirements
+
+### Requirement: Zero-dependency YAML parser supports block scalars and basic structured subset
 The custom `parseYaml` function SHALL document and enforce its supported YAML subset: flat key-value, nested objects (indented), arrays of scalars, arrays of single-key objects, and block scalars (`|`). It SHALL throw a descriptive error for unsupported constructs rather than silently misparse them.
 
 #### Scenario: Unsupported YAML construct

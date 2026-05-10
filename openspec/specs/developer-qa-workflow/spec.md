@@ -1,7 +1,8 @@
 # developer-qa-workflow Specification
 
 ## Purpose
-TBD - created by archiving change add-qa-smoke-harness. Update Purpose after archive.
+
+Establish a QA smoke harness and workflow for verifying project stability after changes.
 ## Requirements
 ### Requirement: Makefile QA Entry Point
 
