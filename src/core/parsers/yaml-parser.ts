@@ -45,13 +45,13 @@ export function parseYaml(yamlString: string): any {
     if (inBlockScalar && blockScalarKey) {
       if (trimmed === '') {
         const cleanLine = '';
-        if (lastPushedObj && typeof lastPushedObj === 'object' && blockScalarKey in lastPushedObj) {
+        if (lastPushedObj && typeof lastPushedObj === 'object' && lastPushedObj !== null && blockScalarKey in lastPushedObj) {
           lastPushedObj[blockScalarKey] += (lastPushedObj[blockScalarKey] ? '\n' : '') + cleanLine;
         } else if (currentTopLevelKey === blockScalarKey) {
           result[currentTopLevelKey] = (result[currentTopLevelKey] || '') + (result[currentTopLevelKey] ? '\n' : '') + cleanLine;
         } else if (currentTopLevelKey && typeof result[currentTopLevelKey] === 'object' && result[currentTopLevelKey] !== null && blockScalarKey in result[currentTopLevelKey]) {
           result[currentTopLevelKey][blockScalarKey] = (result[currentTopLevelKey][blockScalarKey] || '') + (result[currentTopLevelKey][blockScalarKey] ? '\n' : '') + cleanLine;
-        } else if (blockScalarKey in result) {
+        } else if (typeof result === 'object' && result !== null && blockScalarKey in result) {
           result[blockScalarKey] = (result[blockScalarKey] || '') + (result[blockScalarKey] ? '\n' : '') + cleanLine;
         }
         continue;
@@ -63,13 +63,13 @@ export function parseYaml(yamlString: string): any {
 
       if (indent >= blockScalarIndent) {
         const cleanLine = line.slice(blockScalarIndent);
-        if (lastPushedObj && typeof lastPushedObj === 'object' && blockScalarKey in lastPushedObj) {
+        if (lastPushedObj && typeof lastPushedObj === 'object' && lastPushedObj !== null && blockScalarKey in lastPushedObj) {
           lastPushedObj[blockScalarKey] += (lastPushedObj[blockScalarKey] ? '\n' : '') + cleanLine;
         } else if (currentTopLevelKey === blockScalarKey) {
           result[currentTopLevelKey] = (result[currentTopLevelKey] || '') + (result[currentTopLevelKey] ? '\n' : '') + cleanLine;
         } else if (currentTopLevelKey && typeof result[currentTopLevelKey] === 'object' && result[currentTopLevelKey] !== null && blockScalarKey in result[currentTopLevelKey]) {
           result[currentTopLevelKey][blockScalarKey] = (result[currentTopLevelKey][blockScalarKey] || '') + (result[currentTopLevelKey][blockScalarKey] ? '\n' : '') + cleanLine;
-        } else if (blockScalarKey in result) {
+        } else if (typeof result === 'object' && result !== null && blockScalarKey in result) {
           result[blockScalarKey] = (result[blockScalarKey] || '') + (result[blockScalarKey] ? '\n' : '') + cleanLine;
         }
         continue;

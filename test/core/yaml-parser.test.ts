@@ -64,4 +64,50 @@ describe('yaml-parser', () => {
       expect(stringified).toBe(input);
     });
   });
+
+  describe('type-safety', () => {
+    it('should handle null keyword in YAML', () => {
+      // Note: This parser treats 'null' as a string, not the null value
+      // This is expected behavior for this zero-dependency parser
+      const input = 'schema: spec-driven\nrules:\n  proposal:\n    - Rule 1\n    - null\n  specs: null';
+      const result = parseYaml(input);
+      expect(result.schema).toBe('spec-driven');
+      expect(result.rules.proposal).toEqual(['Rule 1', 'null']);
+      expect(result.rules.specs).toBe('null'); // Parser treats 'null' as string
+    });
+
+    it('should handle block scalar with complex structure', () => {
+      const input = 'schema: spec-driven\ncontext: |\n  Line 1\n  Line 2\n\n  Line 4\nrules:\n  specs:\n    - Rule 1\n    - Rule 2';
+      const result = parseYaml(input);
+      expect(result.schema).toBe('spec-driven');
+      expect(result.context).toBe('Line 1\nLine 2\n\nLine 4\n');
+      expect(result.rules.specs).toEqual(['Rule 1', 'Rule 2']);
+    });
+
+    it('should handle empty values', () => {
+      const input = 'schema: spec-driven\ncontext:\nrules:';
+      const result = parseYaml(input);
+      expect(result.schema).toBe('spec-driven');
+      expect(result.context).toBe(null);
+      expect(result.rules).toBe(null);
+    });
+
+    it('should handle block scalars in nested objects', () => {
+      // Block scalars in nested objects (not array items)
+      const input = 'schema: spec-driven\ncontext: |\n  Main context\n  With multiple lines\nrules:\n  proposal: |\n    Multi-line rule\n    With content\n  specs:\n    - Rule A';
+      const result = parseYaml(input);
+      expect(result.schema).toBe('spec-driven');
+      expect(result.context).toBe('Main context\nWith multiple lines\n');
+      expect(result.rules.proposal).toBe('Multi-line rule\nWith content\n');
+      expect(result.rules.specs).toEqual(['Rule A']);
+    });
+
+    it('should handle the error-triggering YAML case', () => {
+      const input = 'schema: spec-driven\ncontext: |\n  Project: Kardenwort-mpv (mpv configuration)\n  Some description\nrules:\n  proposal:\n    - Rule 1';
+      const result = parseYaml(input);
+      expect(result.schema).toBe('spec-driven');
+      expect(result.context).toBe('Project: Kardenwort-mpv (mpv configuration)\nSome description\n');
+      expect(result.rules.proposal).toEqual(['Rule 1']);
+    });
+  });
 });
