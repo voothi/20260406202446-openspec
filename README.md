@@ -83,17 +83,51 @@ AI:  Archived to openspec/changes/archive/20240322174550-add-dark-mode/
 
 </details>
 
-## Quick Start
+## Installation & Setup
 
-**Requires Node.js 20.19.0 or higher.**
+### 1. Standard Installation (Global)
 
-Install OpenSpec globally:
+Requires **Node.js 20.19.0** or higher.
 
 ```bash
 npm install -g @fission-ai/openspec@latest
 ```
 
-Then navigate to your project directory and initialize:
+### 2. Fork Development & Mirroring
+
+This fork uses a **Distribution Mirror** workflow to isolate production artifacts from development dependencies, ensuring a pure zero-dependency runtime.
+
+1.  **Clone and Build**:
+    ```bash
+    git clone https://github.com/voothi/20260406202446-openspec.git
+    cd 20260406202446-openspec
+    npm install
+    ```
+
+2.  **Assemble the Distribution**:
+    Run the synchronization pipeline to build the project, create the mirror, and install system shims:
+    ```bash
+    # Assembles everything into ./openspec-fork and deploys shims
+    npm run sync:all
+    ```
+
+3.  **Dynamic Switching (Environment Variables)**:
+    The system shims act as smart proxies. You can toggle between your global stable version and this local fork mirror by setting the `USE_OPENSPEC_FORK` variable.
+
+    **Windows PowerShell**:
+    ```powershell
+    $env:USE_OPENSPEC_FORK = "true"   # Use local zero-dep fork
+    $env:USE_OPENSPEC_FORK = "false"  # Use global stable
+    ```
+
+    **Windows CMD**:
+    ```cmd
+    set USE_OPENSPEC_FORK=true
+    ```
+
+### 3. Initialize OpenSpec
+
+Navigate to your project directory and initialize:
 
 ```bash
 cd your-project
@@ -102,7 +136,8 @@ openspec init
 
 Now tell your AI: `/opsx:propose <what-you-want-to-build>`
 
-If you want the expanded workflow (`/opsx:new`, `/opsx:continue`, `/opsx:ff`, `/opsx:verify`, `/opsx:sync`, `/opsx:bulk-archive`, `/opsx:onboard`), select it with `openspec config profile` and apply with `openspec update`.
+> [!TIP]
+> To verify which version you are running, use `openspec --version`. If the fork is active, it will reflect the latest fork version (currently **1.4.10**).
 
 > [!NOTE]
 > Not sure if your tool is supported? [View the full list](docs/supported-tools.md) – we support 24+ tools and growing.

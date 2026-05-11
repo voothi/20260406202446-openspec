@@ -7,6 +7,7 @@
 20260511084816 Add my versions to release-notes.md starting with 1.4.0 from clangelog.
 20260511084938 Write that the fork is based on which version of the original project, 1.2.0, on which commit?
 20260511085242 Hang a badge with the version number and a link when you click on it on https://github.com/voothi/20260406202446-openspec. Here is an example of a REAMDE.md header from my other project
+20260511090059 Write about the installation, about environment variables, how it works, how to assemble a project, about the environment variable for switching.
 
 
 
