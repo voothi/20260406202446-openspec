@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/Fission-AI/OpenSpec">
+  <a href="https://github.com/voothi/20260406202446-openspec">
     <picture>
       <source srcset="assets/openspec_bg.png">
       <img src="assets/openspec_bg.png" alt="OpenSpec logo">
@@ -7,22 +7,24 @@
   </a>
 </p>
 
-<p align="center">
-  <a href="https://github.com/Fission-AI/OpenSpec/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Fission-AI/OpenSpec/actions/workflows/ci.yml/badge.svg" /></a>
-  <a href="https://www.npmjs.com/package/@fission-ai/openspec"><img alt="npm version" src="https://img.shields.io/npm/v/@fission-ai/openspec?style=flat-square" /></a>
-  <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
-  <a href="https://discord.gg/YctCnvvshC"><img alt="Discord" src="https://img.shields.io/discord/1411657095639601154?style=flat-square&logo=discord&logoColor=white&label=Discord&suffix=%20online" /></a>
-</p>
+# OpenSpec (Zero-Dependency Fork)
 
-<details>
-<summary><strong>The most loved spec framework.</strong></summary>
+[![Version](https://img.shields.io/badge/version-v1.4.10-blue)](https://github.com/voothi/20260406202446-openspec/releases) 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+[![CI](https://github.com/voothi/20260406202446-openspec/actions/workflows/ci.yml/badge.svg)](https://github.com/voothi/20260406202446-openspec/actions/workflows/ci.yml)
+[![Discord](https://img.shields.io/discord/1411657095639601154?style=flat-square&logo=discord&logoColor=white&label=Discord&suffix=%20online)](https://discord.gg/YctCnvvshC)
 
-[![Stars](https://img.shields.io/github/stars/Fission-AI/OpenSpec?style=flat-square&label=Stars)](https://github.com/Fission-AI/OpenSpec/stargazers)
-[![Downloads](https://img.shields.io/npm/dm/@fission-ai/openspec?style=flat-square&label=Downloads/mo)](https://www.npmjs.com/package/@fission-ai/openspec)
-[![Contributors](https://img.shields.io/github/contributors/Fission-AI/OpenSpec?style=flat-square&label=Contributors)](https://github.com/Fission-AI/OpenSpec/graphs/contributors)
+This fork of OpenSpec represents a high-security, high-traceability evolution of the spec-driven development framework, specifically optimized for agentic coding.
 
-</details>
-<p></p>
+### 🛡️ Remarkable Features
+
+- **Zero-Dependency Runtime** — A "Zero-Trust Supply Chain" architecture with **zero** external npm dependencies in production for maximum security and portability.
+- **ZID-Based Traceability** — Deep timeline integration using 14-digit timestamps (ZIDs), linking every action across Git commits, conversation logs, and activity streams.
+- **Windows 11 & Agent Safety** — Formalized operation standards in `AGENTS.md` specifically optimized for modern Windows development and cross-platform reliability.
+- **Privacy-First** — Permanent removal of all telemetry and tracking. Your code and data stay entirely within your local environment.
+- **Hardened YAML Engine** — A custom, zero-dependency YAML parser designed for resilience and strict type safety against complex edge cases.
+- **Base Foundation** — Evolved from the original OpenSpec **v1.2.0** (commit `1e94443`), modernizing the core for zero-dependency portability.
+
 Our philosophy:
 
 ```text
@@ -103,7 +105,7 @@ Now tell your AI: `/opsx:propose <what-you-want-to-build>`
 If you want the expanded workflow (`/opsx:new`, `/opsx:continue`, `/opsx:ff`, `/opsx:verify`, `/opsx:sync`, `/opsx:bulk-archive`, `/opsx:onboard`), select it with `openspec config profile` and apply with `openspec update`.
 
 > [!NOTE]
-> Not sure if your tool is supported? [View the full list](docs/supported-tools.md) – we support 20+ tools and growing.
+> Not sure if your tool is supported? [View the full list](docs/supported-tools.md) – we support 24+ tools and growing.
 >
 > Also works with pnpm, yarn, bun, and nix. [See installation options](docs/installation.md).
 
@@ -125,7 +127,7 @@ AI coding assistants are powerful but unpredictable when requirements live only 
 - **Zero-Trust Supply Chain** — zero runtime dependencies for maximum security and portability
 - **Stay organized** — each change gets its own folder with ZID-prefixed proposal, specs, design, and tasks
 - **Work fluidly** — update any artifact anytime, no rigid phase gates
-- **Use your tools** — works with 20+ AI assistants via slash commands
+- **Use your tools** — works with 24+ AI assistants via slash commands
 
 ### How we compare
 

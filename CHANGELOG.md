@@ -1,5 +1,15 @@
 # @fission-ai/openspec
 
+## 1.4.10
+
+### Patch Changes
+
+- **YAML Parser Hardening** — Implemented null-safe property existence checks to prevent `TypeError` during parsing of complex YAML structures.
+- **RooCode Integration** — Added RooCode to the official list of supported AI tools with dedicated `.roo` directory support for skills and commands.
+- **Spec Normalization** — Standardized all core specifications by replacing `TBD` placeholders with verified purposes and enforcing consistent heading hierarchies.
+- **Test Parity Synchronisation** — Updated canonical template hashes in regression tests to match current implementation, ensuring 100% test pass rate.
+- **Config Loading Resilience** — Improved error handling in configuration loading to provide descriptive warnings instead of runtime crashes when encountering malformed YAML.
+
 ## 1.4.6
 
 ### Patch Changes

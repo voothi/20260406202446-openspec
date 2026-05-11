@@ -1,4 +1,18 @@
 20260510130058 Add RooCode
 20260511082638 Were the latest changes justified, given that a limited version of the interpreter in RooCode could be used, isolated, in which there are no global variables and normal PowerShell support? docs\conversation.log.md
 20260511082809 The latest changes to the YAML parser (ZID 20260510143655) were justified for several critical reasons, despite the availability of isolated interpreters in specific tools like RooCode: Philosophical Alignment (Zero-Trust/Zero-Dependency): OpenSpec's core architecture is built on a Zero-Trust Supply Chain philosophy, meaning it aims for zero runtime dependencies. Relying on an external interpreter (like RooCode's Python or Browser environments) would introduce a hard dependency on a specific host tool, violating the project's goal of being a portable, standalone CLI that works in any environment (Standard Terminal, Cursor, Cline, Windsurf, etc.). Logic Bug vs. Environment Issue: The specific error fixed (TypeError: Cannot use 'in' operator to search for 'context' in [string]) was a fundamental logic bug in the TypeScript parser code itself. It occurred because the custom parser was attempting to check property existence on values that were strings or null (where typeof returns 'object' but in fails). This bug would persist even in an isolated environment if the same parser code were executed. Cross-Tool Portability: OpenSpec supports over 20 different AI coding assistants. While RooCode offers a sophisticated isolated interpreter, many other supported tools (like Cursor, GitHub Copilot, or basic CLI usage) do not. Fixing the core parser ensures that the tool remains stable and functional for all users, regardless of their IDE or agent. Resilience and Graceful Failure: The changes also improved the config-loading specification to handle malformed YAML with graceful warnings instead of hard crashes. This makes the tool more resilient during initial onboarding or when users make syntax errors in their openspec/config.yaml, providing a better UX than simply relying on a host's isolation to "contain" a crash. In summary, while RooCode's interpreter provides an excellent sandbox for execution, the mission of OpenSpec is to provide a consistent, lightweight, and host-agnostic specification layer. Maintaining a robust, internal parser is essential to that mission.
+20260511083059 Exclude docs\conversation.log from .gitignore.
+20260511084406 create-release-2 v1.4.10
+20260511084556 Update README.md, write about this fork, what is remarkable about it, look at the project changes, at the changelog, it should be at the top of this page.
+20260511084816 Add my versions to release-notes.md starting with 1.4.0 from clangelog.
+20260511084938 Write that the fork is based on which version of the original project, 1.2.0, on which commit?
+20260511085242 Hang a badge with the version number and a link when you click on it on https://github.com/voothi/20260406202446-openspec. Here is an example of a REAMDE.md header from my other project
+
+
+
+
+
+
+
+
 
