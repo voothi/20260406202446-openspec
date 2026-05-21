@@ -7,7 +7,7 @@
     Intelligently routes 'openspec' calls between a stable global install and a local development mirror.
     
 .INSTALLATION
-    1. Rename C:\Users\voothi\AppData\Roaming\npm\node_modules\@fission-ai\openspec -> openspec-stable
+    1. Rename C:\Users\voothi\AppData\Roaming\npm\node_modules\@voothi\openspec -> openspec-stable
     2. Replace C:\Users\voothi\AppData\Roaming\npm\openspec.ps1 with this file.
     3. Set $env:USE_OPENSPEC_FORK = "true" to switch to local development mode.
 #>
@@ -16,7 +16,7 @@ $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 # 1. Stable version path (Defaults to openspec-stable in global node_modules)
 $stablePath = $env:OPENSPEC_STABLE_PATH
 if (-not $stablePath) {
-    $stablePath = "$basedir/node_modules/@fission-ai/openspec-stable/bin/openspec.js"
+    $stablePath = "$basedir/node_modules/@voothi/openspec-stable/bin/openspec.js"
 }
 
 # 2. Local Fork Mirror path (Defaults to your U: drive path)

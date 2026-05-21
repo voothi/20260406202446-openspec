@@ -2,7 +2,7 @@
 :: OpenSpec Smart Switcher (Batch/CMD)
 :: 
 :: INSTALLATION:
-:: 1. Rename C:\Users\voothi\AppData\Roaming\npm\node_modules\@fission-ai\openspec -> openspec-stable
+:: 1. Rename C:\Users\voothi\AppData\Roaming\npm\node_modules\@voothi\openspec -> openspec-stable
 :: 2. Replace C:\Users\voothi\AppData\Roaming\npm\openspec.cmd with this file.
 :: 3. Set USE_OPENSPEC_FORK=true to switch to local development mode.
 
@@ -10,7 +10,7 @@ SETLOCAL
 
 :: Configuration (With Environment Overrides)
 IF "%OPENSPEC_STABLE_PATH%"=="" (
-    SET "STABLE_PATH=%~dp0node_modules\@fission-ai\openspec-stable\bin\openspec.js"
+    SET "STABLE_PATH=%~dp0node_modules\@voothi\openspec-stable\bin\openspec.js"
 ) ELSE (
     SET "STABLE_PATH=%OPENSPEC_STABLE_PATH%"
 )
