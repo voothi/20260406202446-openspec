@@ -40,7 +40,7 @@ const ora = (msg?: string) => ({
 
 const program: any = new CliRouter();
 const require = createRequire(import.meta.url);
-const packageJson = JSON.parse(await fs.readFile(new URL('../../package.json', import.meta.url), 'utf8'));
+const packageJson = require('../../package.json');
 const { version } = packageJson;
 
 program

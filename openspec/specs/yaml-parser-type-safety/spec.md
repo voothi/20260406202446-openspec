@@ -1,7 +1,7 @@
 # yaml-parser-type-safety Specification
 
 ## Purpose
-TBD - created by archiving change 20260510130201-fix-yaml-parser-context-error. Update Purpose after archive.
+This specification defines and enforces type-safety requirements for the YAML parser. It specifically mandates that property existence operations using the `in` operator are safely guarded by explicit object type and non-null verification, preventing runtime `TypeError` exceptions on invalid, empty, or unexpected structures while maintaining full backward compatibility.
 ## Requirements
 ### Requirement: Null-safe property existence checks
 

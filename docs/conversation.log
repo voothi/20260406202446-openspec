@@ -8,8 +8,9 @@
 20260511084938 Write that the fork is based on which version of the original project, 1.2.0, on which commit?
 20260511085242 Hang a badge with the version number and a link when you click on it on https://github.com/voothi/20260406202446-openspec. Here is an example of a REAMDE.md header from my other project
 20260511090059 Write about the installation, about environment variables, how it works, how to assemble a project, about the environment variable for switching.
-
-
+20260521092511 Replace the ID so I can install in npm voothi/openspec.
+20260521101024 C:\openspec Error
+20260521101206 The SyntaxError: Unexpected token ' ', " {\n "n"... is not valid JSON error was caused by a UTF-8 BOM (\xef\xbb\xbf) at the beginning of openspec-fork/package.json. Since the OpenSpec CLI in src/cli/index.ts was reading and parsing package.json using JSON.parse(await fs.readFile(..., 'utf8')), the presence of the BOM byte order mark caused the parsing to fail. Node's JSON.parse does not strip BOMs from strings natively, whereas its require() mechanism does. Changes Implemented Robust parsing in src/cli/index.ts: Replaced the manual fs.readFile and JSON.parse with the created require helper (require('../../package.json')). This handles BOM prefixes automatically, aligning the entry point's parsing logic with the rest of the codebase (e.g., src/core/init.ts and src/core/update.ts). Stripped BOM from openspec-fork/package.json: Safely removed the BOM character from the fork's package.json file. Normalized Specifications: Fixed two separate specification files (openspec/specs/normalization/spec.md and openspec/specs/yaml-parser-type-safety/spec.md) whose Purpose sections still contained the default TBD placeholder text left behind from previous change archival operations. Rebuilt and Synced: Ran npm run sync:all to compile and synchronize all updated assets to the local openspec-fork target. All 1,350 unit and integration tests are now passing successfully. The CLI commands such as openspec status and openspec --help are fully operational and resolve correctly when the fork is enabled.
 
 
 

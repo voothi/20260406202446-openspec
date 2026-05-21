@@ -1,7 +1,7 @@
 # normalization Specification
 
 ## Purpose
-TBD - created by archiving change 20260510125327-fix-failing-tests. Update Purpose after archive.
+This specification defines and enforces standard normalization rules for all specification files in the repository. It ensures that every specification file follows a unified structural format, includes non-placeholder Title and Purpose sections, and bans raw delta headers or unarchived placeholders in the source-of-truth directory.
 ## Requirements
 ### Requirement: Unified Spec Purpose Standard
 All specification files in the repository MUST include a non-placeholder `## Purpose` section and a `# title`.
