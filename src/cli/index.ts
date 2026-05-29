@@ -2,6 +2,13 @@ import { CliRouter } from '../core/cli-router.js';
 import { createRequire } from 'module';
 import path from 'path';
 import { promises as fs } from 'fs';
+
+// Support custom project root location via environment variable OPENSPEC_PROJECT_ROOT
+if (process.env.OPENSPEC_PROJECT_ROOT) {
+  const targetRoot = path.resolve(process.env.OPENSPEC_PROJECT_ROOT);
+  process.cwd = () => targetRoot;
+}
+
 import { AI_TOOLS } from '../core/config.js';
 import { UpdateCommand } from '../core/update.js';
 import { ListCommand } from '../core/list.js';
