@@ -3,10 +3,25 @@ import { createRequire } from 'module';
 import path from 'path';
 import { promises as fs } from 'fs';
 
-// Support custom project root location via environment variable OPENSPEC_PROJECT_ROOT
-if (process.env.OPENSPEC_PROJECT_ROOT) {
-  const targetRoot = path.resolve(process.env.OPENSPEC_PROJECT_ROOT);
-  process.cwd = () => targetRoot;
+import fsSync from 'fs';
+
+// Support custom project root location via openspec/config.yaml projectRoot field
+try {
+  const actualCwd = process.cwd();
+  let configPath = path.join(actualCwd, 'openspec', 'config.yaml');
+  if (!fsSync.existsSync(configPath)) {
+    configPath = path.join(actualCwd, 'openspec', 'config.yml');
+  }
+  if (fsSync.existsSync(configPath)) {
+    const content = fsSync.readFileSync(configPath, 'utf-8');
+    const match = content.match(/^\s*projectRoot:\s*['"]?([^'"\r\n]+)['"]?\s*$/m);
+    if (match && match[1]) {
+      const targetRoot = path.resolve(match[1].trim());
+      process.cwd = () => targetRoot;
+    }
+  }
+} catch (err) {
+  // Gracefully ignore startup resolution failures
 }
 
 import { AI_TOOLS } from '../core/config.js';
