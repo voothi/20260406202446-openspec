@@ -1,3 +1,0 @@
-- [ ] Implement `isTelemetryEnabled()` always returning `false`
-- [ ] Stub `trackCommand()`
-- [ ] Stub `maybeShowTelemetryNotice()`

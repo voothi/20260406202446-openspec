@@ -118,6 +118,10 @@ export async function validateChangeExists(
     if (available.length === 0) {
       throw new Error('No changes found. Create one with: openspec new change <name>');
     }
+    if (available.length === 1) {
+      console.error(`[OPENSPEC] Auto-detecting single active change: ${available[0]}`);
+      return available[0];
+    }
     throw new Error(
       `Missing required option --change. Available changes:\n  ${available.join('\n  ')}`
     );
