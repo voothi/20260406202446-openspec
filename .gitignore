@@ -164,3 +164,8 @@ reference-openspec/
 # Release Mirror
 openspec-fork/
 .history/
+
+# Custom directories
+.agent/
+.github/
+.roo/
