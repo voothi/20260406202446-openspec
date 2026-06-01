@@ -147,10 +147,20 @@ export function deleteNestedValue(obj: Record<string, unknown>, path: string): b
 /**
  * Coerce a string value to its appropriate type.
  */
-export function coerceValue(value: string, forceString: boolean = false): string | number | boolean {
+export function coerceValue(value: string, forceString: boolean = false): any {
   if (forceString) return value;
   if (value === 'true') return true;
   if (value === 'false') return false;
+
+  // Try parsing as JSON array or object
+  if ((value.startsWith('[') && value.endsWith(']')) || (value.startsWith('{') && value.endsWith('}'))) {
+    try {
+      return JSON.parse(value);
+    } catch {
+      // Fallback to string if parsing fails
+    }
+  }
+
   const num = Number(value);
   if (!isNaN(num) && isFinite(num) && value.trim() !== '') return num;
   return value;
